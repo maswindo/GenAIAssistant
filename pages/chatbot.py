@@ -1,7 +1,8 @@
+
 # This file will implement the chatbot feature
 from langchain_openai import ChatOpenAI
 
-from dotenv import load_dotenv, find_dotenv 
+from dotenv import load_dotenv, find_dotenv
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 
 # LangChain Messages
@@ -12,12 +13,12 @@ import secrets  # for generating random session ID
 # Message Prompt Tools
 from langchain.prompts import (
     ChatPromptTemplate,
-    MessagesPlaceholder, 
+    MessagesPlaceholder,
 )
 
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
-# frontend tool 
+# frontend tool
 import streamlit as st
 from streamlit_chat import message
 from tools.tavily_lookup_tool import tavilySearchTool
@@ -37,23 +38,23 @@ chat = ChatOpenAI(model="gpt-4-turbo", temperature=0)
 # Function to generate response
 def generate_response(query:str, chat_session_token):
     tools = [tavilySearchTool,create_enhanced_resume]
-    
+
     # Create prompt template
     prompt = ChatPromptTemplate.from_messages([
-        ("system", 
+        ("system",
          "You are a helpful assistant. You may not need to use tools for every query - the user may just want to chat!",
          ),
         MessagesPlaceholder(variable_name="chat_history"), ("human", "{query}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
-    
+
     agent = create_openai_tools_agent(chat, tools, prompt,)
 
     agent_executor = AgentExecutor(
-        agent=agent, 
+        agent=agent,
         tools=tools,
         verbose=True,
-    )          
+    )
     agent_with_chat_history = RunnableWithMessageHistory(
         agent_executor,
         get_session_history,
@@ -69,7 +70,7 @@ def generate_response(query:str, chat_session_token):
 def get_session_history(session_id:str) -> BaseChatMessageHistory:
     if session_id not in st.session_state:
         st.session_state[session_id] = ChatMessageHistory()
-        
+
     return st.session_state[session_id]
 
 def get_user_resume(username):
