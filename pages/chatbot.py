@@ -132,6 +132,6 @@ if st.session_state["chat_message_history"]:
         # give each message widget a unique key not based off of output
         message(user_query, is_user=True, key=secrets.token_hex(8))
         message(response, key=secrets.token_hex(8))
-
-if st.session_state["resume_requested"] and st.session_state["resume"]:
-    process_resume(st.session_state["resume"])
+        if "Here's your resume" in response:
+            if st.session_state["resume_requested"] and st.session_state["resume"]:
+                process_resume(st.session_state["resume"])
