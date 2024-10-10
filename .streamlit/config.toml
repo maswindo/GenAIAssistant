@@ -1,0 +1,9 @@
+[theme]
+base = "light"
+primarycolor = "black"
+backgroundColor = "white"
+
+
+[client]
+showSidebarNavigation = false
+

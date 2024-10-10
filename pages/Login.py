@@ -11,7 +11,6 @@ def check_credentials(username_from_client, password_from_client):
     # MongoDB URI without the tlsCAFile option
     uri = os.environ.get('URI_FOR_Mongo')
 
-
     # Create MongoClient object with tlsCAFile option
     #tlsCAFile=os.environ.get('tlsCAFile')
     tlsCAFile = certifi.where()
@@ -30,10 +29,12 @@ def check_credentials(username_from_client, password_from_client):
 
     # Check if the result is not None (credentials exist)
     if result:
-        st.session_state["username"] = username
-        st.session_state['link'] = result['link']
-        st.success(f"Logged in as: {username}")
-        st.switch_page("pages/chatbot.py")
+        # Store the username and first name in session state
+        st.session_state["username"] = result["username"]
+        st.session_state["first_name"] = result["firstName"]  
+        st.session_state['link'] = result.get('link', '')  
+        st.success(f"Logged in as: {result['firstName']}")
+        st.switch_page("pages/WelcomePage.py")
     else:
         st.error("Incorrect username or password!")
 
@@ -42,8 +43,6 @@ def check_credentials(username_from_client, password_from_client):
 
 
 st.title("Login")
-st.sidebar.page_link("Login.py", label="Log In")
-st.sidebar.page_link("pages/Register.py", label="Register")
 
 with st.form("my_form", clear_on_submit=True):
     st.text("Username:")
