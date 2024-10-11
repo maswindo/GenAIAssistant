@@ -68,20 +68,21 @@ LangChain’s multi-agent framework, where each agent has a specific task:
 
 ## Use Cases
 
-### Use Case 1: Glassdoor Interview Questions Retrieval
+### Use Case 1: Insights into Company Culture and Values (In-progress)
+
+A user is interested in working for IBM and wants to know more about the company’s culture and values. The system retrieves and displays detailed information about IBM's mission and core values based on publicly available data and reviews from Glassdoor, helping the user determine if it aligns with their career aspirations.
+
+### Use Case 2: Glassdoor Interview Questions Retrieval
 
 A user applies for a position at Google and wants to prepare for the interview. The system retrieves relevant past interview questions from Glassdoor based on the job title and company name.
 
-### Use Case 2: LinkedIn Network Retrieval
+### Use Case 3: LinkedIn Network Retrieval
 
-A user seeks referrels opportunities for a Software Engineer position at Facebook. The system retrieves LinkedIn profiles of people currently working at Facebook in similar job roles for networking.
+A user seeks referral opportunities for a Software Engineer position at Facebook. The system retrieves LinkedIn profiles of people currently working at Facebook in similar job roles for networking.
 
-### Use Case 3: Job Skills Matching and Improvement Suggestions
+### Use Case 4: Job Skills Matching and Improvement Suggestions
 
 A user searches for a Data Scientist position at Amazon. The system retrieves the job requirements and skills needed for the role as well as company insights and compares them with the user’s profile (resume, skills, and experience). It then provides suggestions for improving the user’s qualifications for that specific company. 
 
-### Use Case 4: Insights into Company Culture and Values
-
-A user is interested in working for IBM and wants to know more about the company’s culture and values. The system retrieves and displays detailed information about IBM's mission and core values based on publicly available data and reviews from Glassdoor, helping the user determine if it aligns with their career aspirations.
 
 
