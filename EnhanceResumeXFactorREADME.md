@@ -42,6 +42,14 @@ Description: Users can now upload a different resume to replace the current one 
 
 Impact: Increased flexibility for users to work on different resumes, making it easier to update and tailor multiple versions for various job applications.
 
+7. X-Factor Suggestions
+
+Description: An "X-Factor" feature has been added to help users differentiate themselves from other candidates. The X-Factor suggests unique skills, projects, or experiences that can make a resume stand out.
+
+Impact: Users receive tailored suggestions for unique differentiators, making their resumes more compelling and helping them stand out in a competitive job market.
+
+
+
 Updated Workflow
 
 User Authentication: Users must log in to access their saved resumes.
@@ -85,3 +93,5 @@ Multiple Resume Storage: Allow users to store multiple versions of their resumes
 Job Description Library: Enable users to select from a library of common job descriptions for easier tailoring.
 
 Interactive Suggestions: Make the career improvement suggestions more interactive, allowing users to click through for additional information or examples.
+
+Expanded X-Factor Suggestions: Develop the X-Factor feature further to provide even more personalized and unique differentiators, including actionable examples and additional resources for users to pursue.
