@@ -34,6 +34,8 @@ def check_credentials(username_from_client, password_from_client):
         st.session_state['link'] = result['link']
         st.success(f"Logged in as: {username}")
         st.switch_page("pages/chatbot.py")
+        #st.switch_page("pages/EnhanceResume.py")
+
     else:
         st.error("Incorrect username or password!")
 
