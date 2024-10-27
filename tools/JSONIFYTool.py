@@ -18,7 +18,7 @@ def file_to_json() -> dict:
     tlsCAFile = certifi.where()
     client = MongoClient(uri, tlsCAFile=tlsCAFile)
 
-    db = client['Elijuwon_Database_499']
+    db = client['499']
     collection = db['files_uploaded']
     document = collection.find_one({'username': st.session_state['username']})
 
