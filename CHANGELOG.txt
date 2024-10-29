@@ -4,8 +4,8 @@ Added
 Display_Resume: Created function to return the string format of the resume.
 
 Changed
-ResumeProcess.py parses and identifies all fields of resume (WIP)
-Process_Resume: Processes the data from the resume, previous function moved to Display_Resume
+ResumeProcess.py parses and identifies all fields of resume through AI agents
+Process_Resume: Processes the data from the resume and send it to mongodb, previous function moved to Display_Resume
 Chatbot Integration: The chatbot now calls Display_Resume to display the resume.
 Resume Processing: Moved function get_user_resume to Resume_Processor.
 Data Extraction: Extracted data fields from the resume using the new library pyresparser.
@@ -15,17 +15,8 @@ Requirements.txt: Alphabetically Ordered
 Removed
 import docx in resumeprocessor
 
-Dependencies
-Updated requirements.txt;
-Installed apache-arrow as a requirement for pyresparser.
-
-Notes
-pyresparser does not work as is. I forked it and modified it to work for our project. 
-
 Installation Notes
 Mac Users: To avoid system-wide changes, deactivate your base environment with conda deactivate before installation. Cautionary, not sure if necessary
 
-
 TO-DO
 Database Connection: Implement singular database connection to reduce redundancy and possible connection limit bottleneck
-Pyresparser doesn't seem to get everything, just skills and names so far
