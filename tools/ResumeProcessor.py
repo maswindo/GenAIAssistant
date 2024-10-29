@@ -56,7 +56,7 @@ extraction_tools = [
         "type": "function",
         "function": {
             "name": "extract_data",
-            "description": "Extracts data from a resume by creating lists categorized by common resume fields, including, but not limited to: skills, education, Objective or Summary Statement, Contact Information, Work Experience,Certifications and Licenses,Projects,Volunteer Experience,Awards and Honors,Publications and Presentations,Professional Affiliations,Languages ",
+            "description": "Extracts data from a resume by creating a JSON object populated by arrays categorized by common resume fields, including, but not limited to: skills, education, Objective or Summary Statement, Contact Information, Work Experience,Certifications and Licenses,Projects,Volunteer Experience,Awards and Honors,Publications and Presentations,Professional Affiliations,Languages ",
             "parameters": {
                 "type": "object",
                 "properties": {
