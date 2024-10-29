@@ -4,38 +4,11 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import certifi
-import subprocess
-import spacy
-import nltk
-
 load_dotenv()
 
 def check_credentials(username_from_client, password_from_client):
     # MongoDB URI without the tlsCAFile option
     uri = os.environ.get('URI_FOR_Mongo')
-    # Initialize spaCy with English model
-    model_name = "en_core_web_sm"
-    # Check if the spaCy model is already installed
-    try:
-        spacy.load(model_name)
-        print(f"spaCy model '{model_name}' is already installed.")
-    except OSError:
-        print(f"Installing spaCy model: {model_name}...")
-        subprocess.call(['python', '-m', 'spacy', 'download', model_name])
-
-    # Load the spaCy model
-    nlp = spacy.load(model_name)
-
-    #Initialize NLTK
-    nltk_resources = ['stopwords', 'words']
-    for resource in nltk_resources:
-        try:
-            nltk.data.find(f'corpora/{resource}.zip')
-            print(f"NLTK resource '{resource}' already downloaded.")
-        except LookupError:
-            print(f"Downloading NLTK resource: {resource}...")
-            nltk.download(resource)
-
 
     # Create MongoClient object with tlsCAFile option
     #tlsCAFile=os.environ.get('tlsCAFile')
