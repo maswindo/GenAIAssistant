@@ -4,11 +4,13 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import certifi
+
 load_dotenv()
 
 def check_credentials(username_from_client, password_from_client):
     # MongoDB URI without the tlsCAFile option
     uri = os.environ.get('URI_FOR_Mongo')
+
 
     # Create MongoClient object with tlsCAFile option
     #tlsCAFile=os.environ.get('tlsCAFile')

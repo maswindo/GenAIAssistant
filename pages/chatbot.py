@@ -26,10 +26,11 @@ from tools.ResumeGenerator import create_enhanced_resume
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from tools.ResumeProcessor import process_resume
+import os
+
+#Import Resume Tools
 from tools.ResumeProcessor import get_user_resume
 from tools.ResumeProcessor import display_resume
-import os
 
 # Load environment variables
 load_dotenv(find_dotenv())
