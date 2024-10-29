@@ -143,7 +143,7 @@ def extract_data(resume_data):
         "Please do not introduce new information or categories not found in the provided resume."
         "Please do not relate or make inference upon the relationship of data unless it for the purpose to categorize them"
         "Please ensure that all relevant details are captured. Aim for comprehensive extraction and feel free to introduce new categories as needed."
-        "Be sure to include as lists, but not limited to: skills, hard skills, soft skills, subcategories of skills based on field|area|topic|position|etc., education, Objective or Summary Statement, Contact Information, Work Experience,Certifications and Licenses,Projects,Volunteer Experience,Awards and Honors,Publications and Presentations,Professional Affiliations,Languages"
+        "Be sure to include as lists, but not limited to: skills, hard skills, soft skills, subcategories of skills based on field|area|topic|position|etc., education, Objective or Summary Statement, Contact Information, Work Experience,Certifications and Licenses,Projects,Volunteer Experience,Awards and Honors,Publications and Presentations,Professional Affiliations,Languages, Extra-Curricular,Additional Information, Personal Projects, References,Patents, Portfolio, Professional Development and Training "
         "Here's an example format, but feel free to add new fields if necessary:\n\n"
         "{{\n"
         "  'Contact Information': {{\n"
