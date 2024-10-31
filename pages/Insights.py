@@ -32,3 +32,4 @@ if st.button("Generate Insights"):
 if st.button("Extract Job Details"):
    process_jobs()
 
+
