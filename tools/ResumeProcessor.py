@@ -13,7 +13,6 @@ load_dotenv('../.env')
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 #Agent Prompts
-
 triaging_system_prompt = """You are a Triaging Agent. Your role is to assess the user's query and route it to the relevant agents. The agents available are:
     - Resume Data Extraction Agent: Extracts data from a resume
 
@@ -101,7 +100,9 @@ def save_resume_to_mongo(extracted_data):
     collection.update_one(filter_query, update_fields, **options)
 
 # Main function to process resume data
-def process_resume(resume,conversation_messages=[]):
+def process_resume(resume, conversation_messages=None):
+    if conversation_messages is None:
+        conversation_messages = []
     resume_data = resume_to_text(resume)
     user_message = {"role": "user", "content": resume_data}
     conversation_messages.append(user_message)
