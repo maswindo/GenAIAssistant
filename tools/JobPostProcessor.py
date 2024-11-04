@@ -100,7 +100,7 @@ def process_job_listing(job_listing, conversation_messages=None):
 
     # Get response from the model, using triage tools for initial sorting
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=messages,
         temperature=0,
         tools=triage_tools,
@@ -203,7 +203,7 @@ def extract_data(job_data):
         "If any categories are not applicable, simply omit them."
     )
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[
             {"role": "user", "content": prompt, "type": "json_object"}
         ]
@@ -261,7 +261,7 @@ def handle_data_extracting_agent(job_listing, conversation_messages):
 
     # Generate a response from the triaging system
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",  # or whatever model you're using
+        model="gpt-4o-mini",  # or whatever model you're using
         messages=messages,
         temperature=0,
         tools=extraction_tools  # Use the tools defined for triaging
