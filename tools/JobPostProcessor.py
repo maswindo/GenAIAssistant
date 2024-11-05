@@ -1,4 +1,6 @@
 import json
+import sys
+
 import certifi
 import os
 from dotenv import load_dotenv
@@ -134,6 +136,7 @@ def extract_data(job_data):
         "Any lists generated should be formatted as an array in JSON, within whatever array or category they would normally appear.\n"
         "Be sure to include as lists, but not limited to: Job Title,Company Name,Location,Employment Type,Department,Job Summary,Responsibilities,Required Skills,Preferred Skills,Qualifications,Education Requirements,Experience Requirements,Certifications/Licenses,Physical Requirements,Working Hours,Salary Range,Benefits,Work Environment,Travel Requirements,Reporting Structure,Career Development Opportunities,Application Deadline,Application Process\n"
         "If the job listing is unformatted, or has no labeled sections, or has is unconventionally written, still try try to extract the fields as best possible contextually."
+        "Output the JSON object directly without using backticks or the 'json' label."
         "Here's an example format, but feel free to add new fields if necessary:\n\n"
         "{\n"
         "  'Job Title': 'string',\n"
@@ -211,13 +214,15 @@ def extract_data(job_data):
 
     # Parse the assistant's reply as JSON
     extracted_data = response.choices[0].message.content
-
+    print(repr(extracted_data))
     # Attempt to convert the response into a JSON object
     try:
         json_data = json.loads(extracted_data)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
         # If JSON decoding fails, return the raw text to inspect or handle further
+        print(f"JSON decode error: {e}")
         json_data = {"error": "Failed to parse JSON", "data": extracted_data}
+        sys.exit(1)
 
     return json_data
 
