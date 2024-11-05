@@ -214,6 +214,7 @@ def extract_data(job_data):
 
     # Parse the assistant's reply as JSON
     extracted_data = response.choices[0].message.content
+    #print(repr(extracted_data))
     # Attempt to convert the response into a JSON object
     try:
         json_data = json.loads(extracted_data)
