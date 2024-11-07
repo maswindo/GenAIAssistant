@@ -1,3 +1,5 @@
+# Your capstone code looks great! Here are some suggestions and updates to address your concerns.
+
 import streamlit as st
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -11,6 +13,8 @@ import pytesseract
 from PIL import Image
 import io
 from langchain.schema import HumanMessage, SystemMessage
+from docx import Document  # To handle .docx files
+from fpdf import FPDF  # To generate PDF output
 
 #######################################################################################################
 # LOAD ENVIRONMENT VARIABLES AND SETUP OPENAI CLIENT
@@ -79,7 +83,7 @@ def interact_with_gpt(prompt):
         response = chat(messages)
 
         # Extract and return the generated response content
-        return response.content
+        return response.content.strip()
     except Exception as e:
         st.error(f"Error interacting with GPT-4 Turbo: {e}")
         return ""
@@ -104,24 +108,102 @@ def extract_text_from_file(file_data):
     try:
         # Convert binary data to a file-like object
         file_like = io.BytesIO(file_data)
-        # Assuming PDF, handle it with pdfplumber and OCR if needed
-        with pdfplumber.open(file_like) as pdf:
-            resume_text = ""
-            for page in pdf.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    resume_text += page_text + "\n"
-                else:
-                    # Attempt OCR for non-readable text
-                    image = page.to_image()
-                    pil_image = image.original
-                    ocr_text = pytesseract.image_to_string(pil_image)
-                    if ocr_text:
-                        resume_text += ocr_text + "\n"
-        return resume_text
+        if file_data[:4] == b'\x50\x4b\x03\x04':  # Check if it's a .docx file
+            return extract_text_from_docx(file_like)
+        else:  # Assume PDF
+            with pdfplumber.open(file_like) as pdf:
+                resume_text = ""
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        resume_text += page_text + "\n"
+                    else:
+                        # Attempt OCR for non-readable text
+                        image = page.to_image()
+                        pil_image = image.original
+                        ocr_text = pytesseract.image_to_string(pil_image)
+                        if ocr_text:
+                            resume_text += ocr_text + "\n"
+                return resume_text
     except Exception as e:
-        st.warning(f"Error extracting PDF: {e}")
+        st.warning(f"Error extracting text from file: {e}")
         return None
+
+#######################################################################################################
+# FUNCTION TO EXTRACT TEXT FROM .DOCX FILES
+#######################################################################################################
+
+def extract_text_from_docx(file_like):
+    try:
+        document = Document(file_like)
+        docx_text = "\n".join([para.text for para in document.paragraphs])
+        return docx_text
+    except Exception as e:
+        st.warning(f"Error extracting DOCX: {e}")
+        return None
+
+######################################################################################################
+# FUNCTION TO GENERATE PDF FROM TEXT
+#######################################################################################################
+
+def generate_pdf_from_text(text, filename="enhanced_resume.pdf"):
+    pdf = FPDF(orientation="P", unit="mm", format="A4")
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # Split text into lines to avoid overflowing the PDF page
+    for line in text.splitlines():
+        if pdf.get_string_width(line) > 190:  # Check if the line is too long
+            words = line.split()
+            current_line = ""
+            for word in words:
+                if pdf.get_string_width(current_line + word + " ") < 190:
+                    current_line += word + " "
+                else:
+                    pdf.cell(200, 10, txt=current_line, ln=True)
+                    current_line = word + " "
+            if current_line:
+                pdf.cell(200, 10, txt=current_line, ln=True)
+        else:
+            pdf.cell(200, 10, txt=line, ln=True)
+
+    # Save the PDF file
+    pdf.output(filename, dest='F').encode('latin1', 'replace')  # Handle encoding errors
+
+    return filename
+
+#######################################################################################################
+# FUNCTION TO GENERATE PDF OUTPUT FOR ENHANCED RESUME
+#######################################################################################################
+
+def generate_pdf_resume(text, output_filename="enhanced_resume.pdf"):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    if not text.strip():
+        pdf.cell(0, 10, "No content available to generate the resume.", ln=True)
+    else:
+        for line in text.split("\n"):
+            if line.strip():
+                if pdf.get_string_width(line) > pdf.w - 2 * pdf.l_margin:
+                    # Split long lines into smaller chunks
+                    words = line.split(" ")
+                    current_line = ""
+                    for word in words:
+                        if pdf.get_string_width(current_line + word + " ") < pdf.w - 2 * pdf.l_margin:
+                            current_line += word + " "
+                        else:
+                            pdf.multi_cell(0, 10, current_line.strip())
+                            current_line = word + " "
+                    if current_line:
+                        pdf.multi_cell(0, 10, current_line.strip())
+                else:
+                    pdf.multi_cell(0, 10, line)
+    pdf.output(output_filename)
+    return output_filename
 
 #######################################################################################################
 # RETRIEVE AND DISPLAY USER RESUME
@@ -153,9 +235,12 @@ if st.session_state.get("resume") and st.session_state["resume"].strip():
     # Step 1: Provide an initial summary of suggested changes
     if "detailed_summary" not in st.session_state:
         if st.button("Analyze Resume for Suggested Enhancements"):
-            prompt = (f"Here is a resume:\n\n{st.session_state['resume']}\n\n"
-                      f"Job Description:\n\n{job_description}\n\n"
-                      f"Please provide a summary of the improvements you would suggest to enhance this resume, and why those changes would be beneficial.")
+            prompt = f"Resume Text: {st.session_state['resume']}\n"
+            if job_description.strip():
+                prompt += f"Job Description: {job_description}\n"
+            prompt += ("As an expert career coach, provide a detailed analysis highlighting:\n"
+                       "1. The strengths of the resume.\n"
+                       "2. Actionable steps to enhance the resume for better alignment.")
             detailed_summary = interact_with_gpt(prompt)
             st.session_state["detailed_summary"] = detailed_summary
 
@@ -167,9 +252,12 @@ if st.session_state.get("resume") and st.session_state["resume"].strip():
         # Step 2: Confirm if user wants to proceed with enhancements
         if "enhanced_resume" not in st.session_state:
             if st.button("Proceed with Enhancements"):
-                prompt = (f"Here is a resume:\n\n{st.session_state['resume']}\n\n"
-                          f"Job Description:\n\n{job_description}\n\n"
-                          f"Please enhance the resume to make it more aligned with professional standards, and provide a detailed summary of what changes were made and why.")
+                prompt = f"Resume Text: {st.session_state['resume']}\n"
+                if job_description.strip():
+                    prompt += f"Job Description: {job_description}\n"
+                prompt += ("Rewrite the resume with:\n"
+                           "1. Bullet points in professional language, making them more quantifiable.\n"
+                           "2. Highlighted skills, leadership roles, and gaps to bridge.")
                 enhanced_resume = interact_with_gpt(prompt)
                 st.session_state["enhanced_resume"] = enhanced_resume
 
@@ -178,11 +266,17 @@ if st.session_state.get("resume") and st.session_state["resume"].strip():
         st.subheader("Enhanced Resume:")
         st.text_area("", st.session_state["enhanced_resume"], height=300, key="enhanced_resume")
 
+        # Generate PDF option
+        if st.button("Download Enhanced Resume as PDF"):
+            pdf_filename = generate_pdf_resume(st.session_state["enhanced_resume"])
+            with open(pdf_filename, "rb") as f:
+                st.download_button(label="Download PDF", data=f, file_name=pdf_filename, mime="application/pdf")
+
         # Step 3: Provide additional suggestions for career improvement
         if "career_suggestions" not in st.session_state:
             if st.button("Get Career Improvement Suggestions"):
-                prompt = (f"Based on the enhanced resume:\n\n{st.session_state['enhanced_resume']}\n\n"
-                          f"Please provide additional suggestions for skills, projects, or experiences that could further improve this user's career prospects, including an 'X-Factor' that could help them stand out among top-level candidates.")
+                prompt = (f"Enhanced Resume: {st.session_state['enhanced_resume']}\n"
+                          "Provide suggestions for career growth, including skills to acquire.")
                 career_suggestions = interact_with_gpt(prompt)
                 st.session_state["career_suggestions"] = career_suggestions
 
@@ -203,35 +297,8 @@ uploaded_file = st.file_uploader("Upload your resume (as a .txt, .pdf, or .docx)
 if uploaded_file:
     # Check the file type and read the resume
     file_type = uploaded_file.type
-    resume_text = ""
+    # Save or process the uploaded resume as needed
     if file_type == "text/plain":
-        resume_text = uploaded_file.getvalue().decode("utf-8")
-    elif file_type == "application/pdf":  # Handle .pdf file
-        resume_text = ""
-        try:
-            with pdfplumber.open(uploaded_file) as pdf:
-                for page in pdf.pages:
-                    page_text = page.extract_text()
-                    if page_text:
-                        resume_text += page_text + "\n"
-                    else:
-                        # Attempt OCR for non-readable text
-                        image = page.to_image()
-                        pil_image = image.original
-                        ocr_text = pytesseract.image_to_string(pil_image)
-                        if ocr_text:
-                            resume_text += ocr_text + "\n"
-        except Exception as e:
-            st.error(f"Failed to extract text from PDF: {e}")
-    elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":  # Handle .docx file
-        from docx import Document
-        doc = Document(uploaded_file)
-        for para in doc.paragraphs:
-            if para.text:
-                resume_text += para.text + "\n"
-
-    # Store the resume text in the session state and display it
-    st.session_state["resume"] = resume_text if resume_text else ""
-
-    st.subheader("Uploaded Resume:")
-    st.text_area("", resume_text)
+        new_resume = uploaded_file.read().decode("utf-8")
+    else:
+        new_resume = uploaded_file.read()
