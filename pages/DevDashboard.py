@@ -17,6 +17,7 @@ username = st.session_state.get('username')
 #Page Title
 st.title("Developer Dashboard")
 
+#Functions
 
 def process_jobs():
     for filename in os.listdir("Jobs"):
@@ -26,13 +27,18 @@ def process_jobs():
                 content = file.read()
                 process_job_listing(content)
 
+#Front End
+st.subheader("Internal Analytics")
+
+
+st.subheader("Resume Processor Test to Store in Database")
 if st.button("Process Active Account Resume"):
     if username:
         process_resume(get_user_resume(username))
     else:
         st.write("You must be logged in to perform this action")
 
-
+st.subheader("Job Listings Processor to Store in Database")
 if st.button("Extract Job Details"):
     st.write("Extracts data from all .txt files in 'Jobs' folder located in source directory")
     process_jobs()
