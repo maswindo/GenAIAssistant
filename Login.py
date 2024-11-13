@@ -42,8 +42,6 @@ def check_credentials(username_from_client, password_from_client):
 
 
 st.title("Login")
-st.sidebar.page_link("Login.py", label="Log In")
-st.sidebar.page_link("pages/Register.py", label="Register")
 
 with st.form("my_form", clear_on_submit=True):
     st.text("Username:")
