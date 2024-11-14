@@ -3,7 +3,6 @@ from pymongo import MongoClient
 from dotenv import load_dotenv, find_dotenv
 from openai import OpenAI
 import os
-
 from tools.JobPostProcessor import process_job_listing
 from tools.ResumeProcessor import process_resume
 from tools.ResumeProcessor import get_user_resume
@@ -31,15 +30,17 @@ def process_jobs():
 st.subheader("Internal Analytics")
 
 
-st.subheader("Resume Processor Test to Store in Database")
-if st.button("Process Active Account Resume"):
+st.subheader("Resume Processor: Stores Active User's Resume to Database in JSON format")
+if st.button("Process Resume"):
     if username:
         process_resume(get_user_resume(username))
+        st.write("Process Complete")
     else:
         st.write("You must be logged in to perform this action")
 
-st.subheader("Job Listings Processor to Store in Database")
+st.subheader("Job Listings Processor: Stores Jobs to Database in JSON Format")
 if st.button("Extract Job Details"):
     st.write("Extracts data from all .txt files in 'Jobs' folder located in source directory")
     process_jobs()
+    st.write("Process Complete")
 

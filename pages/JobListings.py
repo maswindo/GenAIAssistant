@@ -7,7 +7,6 @@ import certifi
 
 # Init of Database and Session Variables
 load_dotenv('../.env')
-
 uri = os.environ.get('URI_FOR_Mongo')
 tlsCAFile = certifi.where()
 client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))

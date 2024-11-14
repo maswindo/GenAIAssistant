@@ -134,6 +134,7 @@ def extract_data(job_data):
         "Please do not relate or make inference upon the relationship of data unless it is for the purpose of categorizing them\n"
         "Please ensure that all relevant details are captured. Aim for comprehensive extraction and feel free to introduce new categories as needed.\n"
         "Any lists generated should be formatted as an array in JSON, within whatever array or category they would normally appear.\n"
+        "Location should be stored as a comma seperated list in the form [city],[state],[zip]"
         "Be sure to include as lists, but not limited to: Job Title,Company Name,Location,Employment Type,Department,Job Summary,Responsibilities,Required Skills,Preferred Skills,Qualifications,Education Requirements,Experience Requirements,Certifications/Licenses,Physical Requirements,Working Hours,Salary Range,Benefits,Work Environment,Travel Requirements,Reporting Structure,Career Development Opportunities,Application Deadline,Application Process\n"
         "If the job listing is unformatted, or has no labeled sections, or has is unconventionally written, still try try to extract the fields as best possible contextually."
         "Output the JSON object directly without using backticks or the 'json' label."

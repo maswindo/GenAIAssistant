@@ -11,7 +11,6 @@ def check_credentials(username_from_client, password_from_client):
     # MongoDB URI without the tlsCAFile option
     uri = os.environ.get('URI_FOR_Mongo')
 
-
     # Create MongoClient object with tlsCAFile option
     #tlsCAFile=os.environ.get('tlsCAFile')
     tlsCAFile = certifi.where()
@@ -39,7 +38,6 @@ def check_credentials(username_from_client, password_from_client):
 
     # Close the MongoDB connection
     client.close()
-
 
 st.title("Login")
 

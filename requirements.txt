@@ -1,7 +1,9 @@
+altair>=4.0.0
 attrs~=23.2.0
 configparser==6.0.1
 distro~=1.9.0
 filelock==3.13.1
+geopy==2.4.1
 Jinja2~=3.1.3
 langchain~=0.1.5
 langchain-core~=0.1.43
@@ -11,6 +13,7 @@ nltk~=3.9.1
 openai~=1.51.0
 pathlib==1.0.1
 pillow~=10.4.0
+pandas>=2.1.0
 pypdf~=4.0.2
 PyMuPDF==1.24.1
 PyPDF2~=3.0.1
