@@ -49,3 +49,42 @@ with st.form("my_form", clear_on_submit=True):
     login = st.form_submit_button("Log In")
     if login:
         check_credentials(username, password)
+
+def logout():
+    """Clears session state and refreshes the app."""
+    st.session_state.clear()
+    st.rerun()
+
+# Inject CSS
+st.markdown(
+    """
+    <style>
+    .logout-button {
+        background-color: #ff4b4b;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    .logout-button:hover {
+        background-color: #e84545;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Custom Button using HTML
+logout_button = st.markdown(
+    '<button class="logout-button">Logout</button>',
+    unsafe_allow_html=True
+)
+
+if st.button("Fake Button"):
+    logout()
