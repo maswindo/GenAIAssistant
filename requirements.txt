@@ -12,6 +12,7 @@ langchainhub~=0.1.15
 nltk~=3.9.1
 openai~=1.51.0
 pathlib==1.0.1
+plotly>=5.2.0
 pillow~=10.4.0
 pandas>=2.1.0
 pypdf~=4.0.2
