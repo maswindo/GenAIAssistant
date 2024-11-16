@@ -30,7 +30,6 @@ def save_resume_to_mongo(extracted_data):
     db = connect_to_mongo()
     collection = db['files_uploaded']
     username = st.session_state.get('username')
-    print(extracted_data)
     # Define the filter, update, and additional options
     filter_query = {'username': username}  # Filter by username
     update_fields = {'$set': {'resume_fields': extracted_data}}  # Update resume fields
