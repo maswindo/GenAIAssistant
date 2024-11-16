@@ -97,13 +97,10 @@ def extract_data(resume_data):
 
     return json_data
 
-
 def process_resume(resume_data):
         extracted_data = extract_data(resume_data)
         # Send extracted data to MongoDB
         save_resume_to_mongo(extracted_data)
-
-
 
 def display_resume(uploaded_file):
     pdf_data = uploaded_file
