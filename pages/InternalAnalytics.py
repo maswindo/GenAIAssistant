@@ -9,6 +9,10 @@ from geopy.geocoders import GoogleV3
 import pandas as pd
 import time
 from geopy.exc import GeocoderTimedOut
+
+###
+#This class displays analytics for internal use and triggers for testing functions
+###
 #TODO Applicants Analytics - apply to job post from multiple applicant profiles then extract simple data points
 
 # Initialize Database and Session Variables

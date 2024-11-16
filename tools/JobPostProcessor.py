@@ -1,6 +1,5 @@
 import json
 import sys
-
 import certifi
 import os
 from dotenv import load_dotenv
@@ -8,6 +7,10 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from openai import OpenAI
 from srsly import json_loads
+
+###
+#This class processes a batch of job listings that are stored as a .txt in a folder called Jobs in the source directory
+###
 
 load_dotenv('../.env')
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))

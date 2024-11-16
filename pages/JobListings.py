@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 import os
 import certifi
 
+###
+#This class lists all jobs in mongodb database
+###
 # Init of Database and Session Variables
 load_dotenv('../.env')
 uri = os.environ.get('URI_FOR_Mongo')

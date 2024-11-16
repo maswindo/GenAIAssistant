@@ -9,6 +9,9 @@ from pymongo.server_api import ServerApi
 from streamlit import session_state
 from openai import OpenAI
 
+###
+#This class processes the currently logged in user's resume, parses and uploads it in JSON format to mongodb
+###
 load_dotenv('../.env')
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
