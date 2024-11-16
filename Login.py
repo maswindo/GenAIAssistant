@@ -41,9 +41,15 @@ def check_credentials(username_from_client, password_from_client):
     # Close the MongoDB connection
     client.close()
 
+def logout():
+    st.session_state.clear()
+    st.rerun()
+
 st.title("Login")
 if 'logged_in' in st.session_state and st.session_state["logged_in"]:
     st.write(f"Logged in as {st.session_state.get('username')}")
+    if st.button("Logout"):
+        logout()
 else:
     with st.form("my_form", clear_on_submit=True):
         st.text("Username:")
