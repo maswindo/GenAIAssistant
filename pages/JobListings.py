@@ -18,6 +18,9 @@ collection = db['jobs']
 job_postings = collection.find({})
 user_id = st.session_state.get('username')
 
+if not uri:
+    st.error("Environment variables are missing. Please check the .env file.")
+    st.stop()
 # Front End
 st.title('Job Listings')
 

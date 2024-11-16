@@ -13,7 +13,12 @@ from openai import OpenAI
 #This class processes the currently logged in user's resume, parses and uploads it in JSON format to mongodb
 ###
 load_dotenv('../.env')
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+if not OPENAI_API_KEY:
+    st.error("Environment variables are missing. Please check the .env file.")
+    st.stop()
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def resume_to_text(uploaded_file):
     pdf_data = uploaded_file

@@ -2,18 +2,22 @@ import json
 import sys
 import certifi
 import os
+import streamlit as st
 from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from openai import OpenAI
-from srsly import json_loads
 
 ###
 #This class processes a batch of job listings that are stored as a .txt in a folder called Jobs in the source directory
 ###
 
 load_dotenv('../.env')
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+if not OPENAI_API_KEY:
+    st.error("Environment variables are missing. Please check the .env file.")
+    st.stop()
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def connect_to_mongo():
     uri = os.environ.get('URI_FOR_Mongo')
