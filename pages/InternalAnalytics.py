@@ -4,12 +4,12 @@ import streamlit as st
 from dotenv import load_dotenv
 import os
 import certifi
-import plotly.express as px  # Import Plotly
+import plotly.express as px
 from geopy.geocoders import GoogleV3
 import pandas as pd
-from collections import Counter
 import time
 from geopy.exc import GeocoderTimedOut
+#TODO Applicants Analytics - apply to job post from multiple applicant profiles then extract simple data points
 
 # Initialize Database and Session Variables
 load_dotenv('../.env',override=True)
