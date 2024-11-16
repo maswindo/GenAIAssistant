@@ -8,6 +8,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from streamlit import session_state
 from openai import OpenAI
+from docx import Document
+from io import BytesIO
 
 ###
 #This class processes the currently logged in user's resume, parses and uploads it in JSON format to mongodb
@@ -20,12 +22,24 @@ if not OPENAI_API_KEY:
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-def resume_to_text(uploaded_file):
-    pdf_data = uploaded_file
-    with fitz.open(stream=pdf_data, filetype="pdf") as doc:
-        text = ""
-        for page in doc:
-            text += page.get_text()
+
+def resume_to_text(uploaded_file, file_type):
+    text = ""
+
+    if file_type == 'pdf':
+        # For PDF files, use PyMuPDF (fitz)
+        with fitz.open(stream=uploaded_file, filetype="pdf") as doc:
+            for page in doc:
+                text += page.get_text()
+
+    elif file_type == 'vnd.openxmlformats-officedocument.wordprocessingml.document':
+        # For DOCX files, wrap the bytes in BytesIO to simulate a file-like object
+        file_stream = BytesIO(uploaded_file)
+        doc = Document(file_stream)
+
+        for para in doc.paragraphs:
+            text += para.text + "\n"
+
     return text
 
 def connect_to_mongo():
@@ -34,10 +48,9 @@ def connect_to_mongo():
     client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
     return client['499']
 
-def save_resume_to_mongo(extracted_data):
+def save_resume_to_mongo(extracted_data,username):
     db = connect_to_mongo()
     collection = db['files_uploaded']
-    username = st.session_state.get('username')
     # Define the filter, update, and additional options
     filter_query = {'username': username}  # Filter by username
     update_fields = {'$set': {'resume_fields': extracted_data}}  # Update resume fields
@@ -105,10 +118,13 @@ def extract_data(resume_data):
 
     return json_data
 
-def process_resume(resume_data):
-        extracted_data = extract_data(resume_data)
+def process_resume(resume_data,username):
+        file_type = get_resume_type(username)
+        type, subtype = file_type.split('/')
+        resume = resume_to_text(resume_data,subtype)
+        extracted_data = extract_data(resume)
         # Send extracted data to MongoDB
-        save_resume_to_mongo(extracted_data)
+        save_resume_to_mongo(extracted_data,username)
 
 def display_resume(uploaded_file):
     pdf_data = uploaded_file
@@ -126,6 +142,15 @@ def get_user_resume(username):
     collection = db['files_uploaded']
     user = collection.find_one({'username': username})
     if user and 'data' in user:
-        resume = resume_to_text(user['data'])
-        return resume
+        return user['data']
+    return None
+
+def get_resume_type(username):
+    uri = os.getenv('URI_FOR_Mongo')
+    client = MongoClient(uri, server_api=ServerApi('1'))
+    db = client['499']
+    collection = db['files_uploaded']
+    user = collection.find_one({'username': username})
+    if user and 'file_type' in user:
+        return user['file_type']
     return None

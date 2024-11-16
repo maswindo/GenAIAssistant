@@ -58,20 +58,38 @@ if job_postings:
             st.write(f"**Employment Type:** {employment_type}")
             st.write(f"**Summary:** {summary}")
 
+            import datetime
+            from pymongo.errors import PyMongoError
+
             if st.button("Apply Here", key=f"apply_button_{job['_id']}"):
-                if user_id == "Anonymous" or not user_id:
-                    st.write("You must login to perform this action")
-                else:
-                    filter_query = {
-                        '_id': job["_id"]
-                    }
-                    update = {
-                        "$addToSet": {
-                            "applicants": user_id
-                        }
-                    }
-                    collection.update_one(filter_query, update)
-                    st.write("Applied")
+                try:
+                    if user_id == "Anonymous" or not user_id:
+                        st.write("You must log in to perform this action.")
+                    else:
+                        # Check if the user already applied
+                        existing_application = collection.find_one({
+                            '_id': job["_id"],
+                            "applicants.user_id": user_id
+                        })
+
+                        if existing_application:
+                            st.write("You have already applied for this job.")
+                        else:
+                            # Current timestamp
+                            current_time = datetime.datetime.now()
+
+                            # Add the user to the applicants list
+                            filter_query = {'_id': job["_id"]}
+                            update = {
+                                "$addToSet": {
+                                    "applicants": {"user_id": user_id, "timestamp": current_time}
+                                }
+                            }
+                            collection.update_one(filter_query, update)
+                            st.write("Applied successfully!")
+
+                except PyMongoError as e:
+                    st.error(f"An error occurred: {str(e)}")
 
             st.write("---")
     else:

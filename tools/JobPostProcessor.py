@@ -142,7 +142,7 @@ def extract_data(job_data):
     return json_data
 
 
-def execute_tool(job_data):
+def process_job_listing(job_data):
         # Call extract_data to get structured JSON output
         extracted_data = extract_data(job_data)
 
