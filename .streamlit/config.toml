@@ -1,7 +1,3 @@
-[theme]
-base = "light"
-primarycolor = "black"
-backgroundColor = "white"
 
 
 [client]
