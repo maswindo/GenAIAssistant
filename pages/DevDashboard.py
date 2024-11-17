@@ -56,7 +56,7 @@ if st.button("Process Resume"):
         st.write("You must be logged in to perform this action")
 
 #Function 2: Batch Database User Resume Processing
-st.subheader("Process All Un-Processed Users in Database")
+st.subheader("Process All Un-Processed User Resumes in Database")
 if st.button("Process All Users"):
     users = collection_users.find({
         "resume_fields": {"$exists": False}
