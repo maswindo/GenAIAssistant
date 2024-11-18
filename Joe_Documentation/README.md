@@ -1,4 +1,4 @@
-﻿# Overview of Contributions
+# Overview of Contributions
 
  - Resume parsing
  - Job listing parsing
@@ -172,3 +172,7 @@ Paraphrased quote that comes to mind: "We wanted to fly like birds the birds did
 
 ## Viable APIs
 -Will likely incorporate CareerOne API. It is a governments provided API by the Department of Labor that grants access to federally funded and public information with the intention that the data will be used to further develop the labor market. Has several datasets of interest that could be valuable, and currently the only known firsthand free source of job listings
+
+## Theoretical Works for Reference
+Personality-Job Fit Theory
+Employee Value Proposition (EVP)
