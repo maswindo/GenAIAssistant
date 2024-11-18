@@ -105,10 +105,17 @@ if resume_data:
             }
 
             # Set up prompt template for LLM
+            # Set up prompt template for LLM with personalized context and experience calculation
+            #TODO -
             prompt_template = PromptTemplate(
                 input_variables=['resume', 'job_description'],
                 template="""
-                Given the structured resume and job description below, analyze the user's compatibility for the role.
+                You are a job recruiter evaluating the candidate's compatibility with the role of the job title shown in
+                the job description data. Your task is to assess how well the candidate’s skills, qualifications, and 
+                experience align with the job requirements based on the provided resume and job description. Consider 
+                the following factors for analyzing compatibility: level of relevant projects, years of experience, 
+                listed skill set, and qualifications such as certificates, degrees, and education relevant to the job 
+                posting.
 
                 Resume Data:
                 {resume}
@@ -117,10 +124,19 @@ if resume_data:
                 {job_description}
 
                 Instructions:
-                1. List the specific skills from the resume that match the job requirements.
+                1. List the specific skills and qualifications from the resume that match the job requirements.
                 2. Identify any missing skills, qualifications, or experience in the resume compared to the job description.
-                3. Provide a compatibility score between 0 and 100 based on the alignment of skills, qualifications, and experience.
-                4. Highlight any areas where the candidate may improve to better match the job requirements.
+                3. Calculate the candidate's total experience in each relevant job listed, based on the start and end dates. 
+                   Experience dates may be provided in various formats (e.g., "March 2015 – April 2019," "2017-2021," 
+                   "July 2018 - Present"). Provide each job’s experience length in years and months, and then calculate 
+                   the total relevant experience. Remember the current/present year is 2024.
+                4. Provide a compatibility score between 0 and 100 based on the alignment of skills, qualifications, 
+                   and experience. Weigh experience at 40% (if they have the required amount of experience or more, give
+                   them the full points), qualifications at 40%, and listed skill set at 20%. Only show the final score.
+                   (A score of 80 or above indicates a strong match.)
+                5. Highlight any areas where the candidate may improve to better match the job requirements. If possible, 
+                   suggest either websites or services that can assist in obtaining these requirements. Please keep your 
+                   response concise but informative.
                 """
             )
 
