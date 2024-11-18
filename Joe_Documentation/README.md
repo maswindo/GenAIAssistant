@@ -86,7 +86,7 @@ Displays a job listing's applicants analytics.
 Must establish more analytics that can be easily derived to allow the multi-agent system to produce more accurate results.
 **Notes**
 Every analytics process avaiable is essentially a tool that the multi-agent system can utilize in its calculations. The more data we can derive from the less likeliness of hallucinations, bad math, and weak confidence in analyses.
-
+Should prioritize univariate analytics
 
 ## DevDashboard - DevDasboard.py
 **APIs Added**
