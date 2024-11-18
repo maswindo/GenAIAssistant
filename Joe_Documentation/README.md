@@ -154,6 +154,7 @@ Configured ProxyCurlLinkedIn, the tool to gather Linked In data from companies, 
 
  - Implement multi-agent system
  - Redesign frontend for at-scale user oriented functionality
+ - Security and privacy features
 
 ## Metrics to Judge Operability (Tentative)
 
@@ -176,3 +177,6 @@ Paraphrased quote that comes to mind: "We wanted to fly like birds the birds did
 ## Theoretical Works for Reference
 Personality-Job Fit Theory
 Employee Value Proposition (EVP)
+
+## Privacy
+Possible privacy breach through OpenAI resume parsing. Proposal for zero knowledge proof authentication and closed system/cryptographically secure data manipulation
