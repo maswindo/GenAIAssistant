@@ -15,7 +15,7 @@ from tools.ProxyCurlLinkedIn import get_leadership_team_info
 load_dotenv()
 SERP_API_KEY = os.getenv("SERPAPI_API_KEY")
 
-llm = chat = ChatOpenAI(model="gpt-4", temperature=0)
+llm = chat = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 # use SERPAPI
 def search_google_top_results(query: str):

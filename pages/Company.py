@@ -48,7 +48,6 @@ def get_company_linkedin_data(company_name: str):
     client.close()
     return company_data
 
-
 def get_company_data(company_name: str):
     load_dotenv()
     uri = os.environ.get('URI_FOR_Mongo')  # Load MongoDB URI from the environment
@@ -113,7 +112,7 @@ def load_company_data():
             company_data = generate_company_data(company_name)
         company_linkedin_data = get_company_linkedin_data(company_name)
         if not company_linkedin_data:
-            st.write("Company linked in data not found")
+            st.write("Company LinkedIn data not found")
             st.stop()
 
         # Display the retrieved or scraped data

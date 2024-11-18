@@ -34,6 +34,7 @@ def save_job_details(extracted_data):
 
     # Insert the new job document into the collection
     collection.insert_one(new_job)
+    client.close()
 
 def extract_data(job_data):
     extracting_system_prompt = (

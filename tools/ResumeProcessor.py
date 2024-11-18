@@ -60,6 +60,7 @@ def save_resume_to_mongo(extracted_data,username):
 
     # Update the document in MongoDB
     collection.update_one(filter_query, update_fields, **options)
+    client.close()
 
 def extract_data(resume_data):
     prompt = (

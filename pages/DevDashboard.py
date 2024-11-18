@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from tools.ResumeProcessor import process_resume
 from tools.ResumeProcessor import get_user_resume
+from tools.ProxyCurlCompany import companies_linkedin_batch
 
 # Load variables
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
@@ -75,3 +76,8 @@ if st.button("Extract Job Details"):
     process_jobs()
     st.write("Process Complete")
 
+#Function 4:Batch Company LinkedIn Gathering
+st.subheader("Batch Company LinkedIn Gathering from Jobs Database")
+st.write("Works but Requires ProxyCurl Credits")
+if(st.button("Get Companies LinkedIn Data")):
+    companies_linkedin_batch()
