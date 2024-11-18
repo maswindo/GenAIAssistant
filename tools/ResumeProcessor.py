@@ -108,7 +108,7 @@ def process_resume(resume, conversation_messages=None):
     conversation_messages.append(user_message)
 
     # Initialize the triaging process with the triaging prompt
-    messages = [{"role": "system", "content": triaging_system_prompt}]
+    messages = [{"role": "system", "content" : triaging_system_prompt}]
     messages.extend(conversation_messages)
 
     # Get response from the model, using triage tools for initial sorting
