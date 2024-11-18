@@ -155,6 +155,7 @@ Configured ProxyCurlLinkedIn, the tool to gather Linked In data from companies, 
  - Implement multi-agent system
  - Redesign frontend for at-scale user oriented functionality
  - Security and privacy features
+ - Original system design was a chatbot, we are transitioning towards a fully autonomous and hands-free system
 
 ## Metrics to Judge Operability (Tentative)
 
