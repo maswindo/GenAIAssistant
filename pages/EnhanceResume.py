@@ -1,5 +1,3 @@
-# Your capstone code looks great! Here are some suggestions and updates to address your concerns.
-
 import streamlit as st
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -7,14 +5,12 @@ from langchain_openai import ChatOpenAI
 import os
 import certifi
 from pymongo.server_api import ServerApi
-import secrets  # To generate unique keys
+from langchain.schema import HumanMessage, SystemMessage
+import io
+from docx import Document
 import pdfplumber
 import pytesseract
 from PIL import Image
-import io
-from langchain.schema import HumanMessage, SystemMessage
-from docx import Document  # To handle .docx files
-from fpdf import FPDF  # To generate PDF output
 
 #######################################################################################################
 # LOAD ENVIRONMENT VARIABLES AND SETUP OPENAI CLIENT
@@ -46,71 +42,32 @@ else:
 # TITLE AND USER INTERFACE FOR RESUME ENHANCEMENT PAGE
 #######################################################################################################
 
-# Title of the resume enhancement page
-st.title("Enhance Your Resume with GPT-4 Turbo")
+st.title("Enhance Your Resume with Specialized Agents")
 
 #######################################################################################################
 # DATABASE CONNECTION FUNCTIONS
 #######################################################################################################
 
-# MongoDB setup to retrieve user data
 def get_user_resume_from_db(username):
-    # Connect to MongoDB
     uri = os.getenv('URI_FOR_Mongo')
     with MongoClient(uri, tlsCAFile=certifi.where(), server_api=ServerApi('1')) as client:
         db = client['499']
         collection = db['files_uploaded']
-
-        # Query for the user's resume based on username
         user = collection.find_one({'username': username})
         if user and 'data' in user:
-            return user['data']  # Assuming the data is stored as binary
+            return user['data']
     return None
 
 #######################################################################################################
-# FUNCTION TO INTERACT WITH GPT-4 TURBO
-#######################################################################################################
-
-def interact_with_gpt(prompt):
-    try:
-        # Create the messages list using Langchain's message classes
-        messages = [
-            SystemMessage(content="You are an expert career coach and professional resume writer."),
-            HumanMessage(content=prompt)
-        ]
-
-        # Call the ChatOpenAI model
-        response = chat(messages)
-
-        # Extract and return the generated response content
-        return response.content.strip()
-    except Exception as e:
-        st.error(f"Error interacting with GPT-4 Turbo: {e}")
-        return ""
-
-#######################################################################################################
-# FUNCTION TO PROCESS RESUME DATA
-#######################################################################################################
-
-def process_resume_data(resume_data):
-    """Process and extract text from binary resume data."""
-    if isinstance(resume_data, bytes):
-        return extract_text_from_file(resume_data)
-    else:
-        # Directly return if it's already text
-        return resume_data
-
-#######################################################################################################
-# UTILITY FUNCTION TO EXTRACT TEXT FROM FILE
+# UTILITY FUNCTIONS
 #######################################################################################################
 
 def extract_text_from_file(file_data):
     try:
-        # Convert binary data to a file-like object
         file_like = io.BytesIO(file_data)
-        if file_data[:4] == b'\x50\x4b\x03\x04':  # Check if it's a .docx file
+        if file_data[:4] == b'\x50\x4b\x03\x04':
             return extract_text_from_docx(file_like)
-        else:  # Assume PDF
+        else:
             with pdfplumber.open(file_like) as pdf:
                 resume_text = ""
                 for page in pdf.pages:
@@ -118,7 +75,6 @@ def extract_text_from_file(file_data):
                     if page_text:
                         resume_text += page_text + "\n"
                     else:
-                        # Attempt OCR for non-readable text
                         image = page.to_image()
                         pil_image = image.original
                         ocr_text = pytesseract.image_to_string(pil_image)
@@ -129,163 +85,220 @@ def extract_text_from_file(file_data):
         st.warning(f"Error extracting text from file: {e}")
         return None
 
-#######################################################################################################
-# FUNCTION TO EXTRACT TEXT FROM .DOCX FILES
-#######################################################################################################
-
 def extract_text_from_docx(file_like):
     try:
         document = Document(file_like)
-        docx_text = "\n".join([para.text for para in document.paragraphs])
-        return docx_text
+        return "\n".join([para.text for para in document.paragraphs])
     except Exception as e:
         st.warning(f"Error extracting DOCX: {e}")
         return None
 
-######################################################################################################
-# FUNCTION TO GENERATE PDF FROM TEXT
+#######################################################################################################
+# AGENT FUNCTIONS FOR RESUME ENHANCEMENT
 #######################################################################################################
 
-def generate_pdf_from_text(text, filename="enhanced_resume.pdf"):
-    pdf = FPDF(orientation="P", unit="mm", format="A4")
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
+def interact_with_agent(agent_prompt):
+    try:
+        messages = [
+            SystemMessage(content=agent_prompt['system']),
+            HumanMessage(content=agent_prompt['user'])
+        ]
+        response = chat(messages)
+        return response.content.strip()
+    except Exception as e:
+        st.error(f"Error interacting with GPT-4 Turbo: {e}")
+        return ""
 
-    # Split text into lines to avoid overflowing the PDF page
-    for line in text.splitlines():
-        if pdf.get_string_width(line) > 190:  # Check if the line is too long
-            words = line.split()
-            current_line = ""
-            for word in words:
-                if pdf.get_string_width(current_line + word + " ") < 190:
-                    current_line += word + " "
-                else:
-                    pdf.cell(200, 10, txt=current_line, ln=True)
-                    current_line = word + " "
-            if current_line:
-                pdf.cell(200, 10, txt=current_line, ln=True)
-        else:
-            pdf.cell(200, 10, txt=line, ln=True)
+# Clarity Agent
+def clarity_agent(resume_text):
+    prompt = {
+        'system': "You are an expert recruiter with a focus on enhancing resume clarity. Scan through the resume and focus on improving readability, structure, and organization without adding or fabricating any information. Provide a summary of the changes made and offer suggestions for improving clarity, including substitution examples to illustrate improvements.",
+        'user': f"Enhance the clarity of the following resume text to make it more readable and structured for a recruiter:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
 
-    # Save the PDF file
-    pdf.output(filename, dest='F').encode('latin1', 'replace')  # Handle encoding errors
+# Impact Agent
+def impact_agent(resume_text):
+    prompt = {
+        'system': "You are an expert in enhancing resume impact by emphasizing achievements and quantifiable results. Focus on identifying key accomplishments and ensuring that each achievement is clearly quantified where possible, without fabricating any information. Provide specific changes, but don't just enhance the whole resume your focus is only the impact. Provide a summary of the changes made and offer suggestions for improving impact, including substitution examples to illustrate improvements.",
+        'user': f"Enhance the impact of the following resume text by emphasizing achievements and quantifiable results where applicable. Do not fabricate information:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
 
-    return filename
+# Experience Prioritization Agent
+def experience_prioritization_agent(resume_text):
+    prompt = {
+        'system': "You are an expert in prioritizing resume job experiences to highlight the most relevant information for recruiters. Focus on reorganizing the content so that the most impactful and relevant experiences are placed prominently, improving the overall impression within a short scan. xProvide a summary of the changes made and offer suggestions for improving experience prioritization, including substitution examples to illustrate improvements.",
+        'user': f"Reorganize the job experiences in the following resume text to prioritize the most relevant and impactful experiences for the target job:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
 
-#######################################################################################################
-# FUNCTION TO GENERATE PDF OUTPUT FOR ENHANCED RESUME
-#######################################################################################################
+# Skills Matching Agent
+def skills_matching_agent(resume_text, job_description=None):
+    user_prompt = "Enhance the skills section of the following resume text to make it more impactful and relevant. Do not create or fabricate any skills that are not already present in the resume. Provide a summary of the changes made and offer suggestions for improving matching skills, including substitution examples to illustrate improvements."
+    if job_description:
+        user_prompt += f" Use the following job description for context: {job_description}"
+    prompt = {
+        'system': "You are an expert in improving resume skills presentation. Focus on making existing skills stand out by aligning them closely with the job requirements and presenting them in a more compelling manner. Provide a summary of the changes made and offer suggestions for improving matching skills, including substitution examples to illustrate improvements.",
+        'user': user_prompt + f"\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
 
-def generate_pdf_resume(text, output_filename="enhanced_resume.pdf"):
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
+# Visual Scan Agent
+def visual_scan_agent(resume_text):
+    prompt = {
+        'system': "You are an expert in optimizing resumes for quick visual scans by recruiters. Ensure that key details like job titles, company names, dates, and major achievements are highlighted to stand out during a brief review. Do not alter the core content or fabricate information. Do not enhance the entire resume, just go over visual aspects of the resume and talk about how the user can make specific parts of their resume better visually. Provide a summary of the changes made and offer suggestions for improving the visuals of the users resume, including substitution examples to illustrate improvements.",
+        'user': f"Optimize the following resume text for a quick visual scan by a recruiter:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
 
-    if not text.strip():
-        pdf.cell(0, 10, "No content available to generate the resume.", ln=True)
-    else:
-        for line in text.split("\n"):
-            if line.strip():
-                if pdf.get_string_width(line) > pdf.w - 2 * pdf.l_margin:
-                    # Split long lines into smaller chunks
-                    words = line.split(" ")
-                    current_line = ""
-                    for word in words:
-                        if pdf.get_string_width(current_line + word + " ") < pdf.w - 2 * pdf.l_margin:
-                            current_line += word + " "
-                        else:
-                            pdf.multi_cell(0, 10, current_line.strip())
-                            current_line = word + " "
-                    if current_line:
-                        pdf.multi_cell(0, 10, current_line.strip())
-                else:
-                    pdf.multi_cell(0, 10, line)
-    pdf.output(output_filename)
-    return output_filename
+# ATS Compatibility Agent
+def ats_compatibility_agent(resume_text):
+    prompt = {
+        'system': "You are an expert recruiter specializing in optimizing resumes for Applicant Tracking Systems (ATS). Scan through the resume and provide specific recommendations for improving keyword usage, formatting, and structure to ensure compatibility with ATS. Do not fabricate information or make unrelated changes. Provide a summary of the changes made and offer suggestions for improving ats compatibility, including substitution examples to illustrate improvements.",
+        'user': f"Review the following resume and make precise changes to ensure it is optimized for ATS, including keyword usage, formatting, and structure. Do not fabricate information:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
+
+# Tailoring Agent
+def tailoring_agent(resume_text, job_description=None):
+    user_prompt = "Tailor the following resume text to align with a specific job description without fabricating any information. Focus on adjusting the wording and emphasis to match the job requirements closely. Provide a summary of the changes made and offer suggestions for improving the resume to fit the tailored job, including substitution examples to illustrate improvements."
+    if job_description:
+        user_prompt += f" Use the following job description for context: {job_description}"
+    prompt = {
+        'system': "You are an expert in tailoring resumes to match specific job descriptions. Ensure that the resume content is adjusted to align with the needs and language of the target job while maintaining the integrity of the original information. Provide a summary of the changes made and offer suggestions for improving tailoring, including substitution examples to illustrate improvements.",
+        'user': user_prompt + f"\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
+
+# Branding Agent
+def branding_agent(resume_text):
+    prompt = {
+        'system': "You are an expert in enhancing a candidate's professional branding on their resume. Focus on improving the professional summary, emphasizing unique strengths, and ensuring that the candidate's personal brand is communicated effectively and consistently throughout the resume. Provide a summary of the changes made and offer suggestions for improving the users brand, including substitution examples to illustrate improvements. Help the user establish their brand.",
+        'user': f"Review the following resume text and enhance the personal branding by improving the summary and emphasizing unique strengths:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
+
+# Consistency Agent
+def consistency_agent(resume_text):
+    prompt = {
+        'system': "You are an expert in ensuring consistency across resume details, such as date formats, alignment, punctuation, and general tone. Identify and correct any inconsistencies to present a polished and professional resume. Provide a summary of the changes made and offer suggestions for improving consistency, including substitution examples to illustrate improvements.",
+        'user': f"Ensure consistency in the following resume text, including date formats, alignment, punctuation, and tone:\nResume Text: {resume_text}"
+    }
+    return interact_with_agent(prompt)
 
 #######################################################################################################
 # RETRIEVE AND DISPLAY USER RESUME
 #######################################################################################################
 
-# Fetch resume from the database if not already in session state
-if "resume" not in st.session_state or not st.session_state["resume"]:
-    stored_resume = get_user_resume_from_db(username)
-    if stored_resume:
-        st.write("Debug: Resume found in database.")
-        # Use centralized processing function to parse resume data
-        resume_text = process_resume_data(stored_resume)
-        st.session_state["resume"] = resume_text if resume_text else ""
-    else:
-        st.write("Debug: No resume found in database.")
-
-# Ensure the resume in session state is in a readable format (process it if needed)
-if "resume" in st.session_state and isinstance(st.session_state["resume"], bytes):
-    st.session_state["resume"] = process_resume_data(st.session_state["resume"])
-
-# Display the resume if available
-if st.session_state.get("resume") and st.session_state["resume"].strip():
-    st.subheader("Here is Your Current Resume:")
-    st.text_area("", st.session_state["resume"], height=300)
-
-    # Allow user to add a job description to tailor the enhancement
-    job_description = st.text_area("Add a Job Description (optional):", "", height=150)
-
-    # Step 1: Provide an initial summary of suggested changes
-    if "detailed_summary" not in st.session_state:
-        if st.button("Analyze Resume for Suggested Enhancements"):
-            prompt = f"Resume Text: {st.session_state['resume']}\n"
-            if job_description.strip():
-                prompt += f"Job Description: {job_description}\n"
-            prompt += ("As an expert career coach, provide a detailed analysis highlighting:\n"
-                       "1. The strengths of the resume.\n"
-                       "2. Actionable steps to enhance the resume for better alignment.")
-            detailed_summary = interact_with_gpt(prompt)
-            st.session_state["detailed_summary"] = detailed_summary
-
-    # Display suggested enhancements
-    if "detailed_summary" in st.session_state:
-        st.subheader("Suggested Enhancements:")
-        st.text_area("", st.session_state["detailed_summary"], height=200, key="suggested_enhancements")
-
-        # Step 2: Confirm if user wants to proceed with enhancements
-        if "enhanced_resume" not in st.session_state:
-            if st.button("Proceed with Enhancements"):
-                prompt = f"Resume Text: {st.session_state['resume']}\n"
-                if job_description.strip():
-                    prompt += f"Job Description: {job_description}\n"
-                prompt += ("Rewrite the resume with:\n"
-                           "1. Bullet points in professional language, making them more quantifiable.\n"
-                           "2. Highlighted skills, leadership roles, and gaps to bridge.")
-                enhanced_resume = interact_with_gpt(prompt)
-                st.session_state["enhanced_resume"] = enhanced_resume
-
-    # Display enhanced resume
-    if "enhanced_resume" in st.session_state:
-        st.subheader("Enhanced Resume:")
-        st.text_area("", st.session_state["enhanced_resume"], height=300, key="enhanced_resume")
-
-        # Generate PDF option
-        if st.button("Download Enhanced Resume as PDF"):
-            pdf_filename = generate_pdf_resume(st.session_state["enhanced_resume"])
-            with open(pdf_filename, "rb") as f:
-                st.download_button(label="Download PDF", data=f, file_name=pdf_filename, mime="application/pdf")
-
-        # Step 3: Provide additional suggestions for career improvement
-        if "career_suggestions" not in st.session_state:
-            if st.button("Get Career Improvement Suggestions"):
-                prompt = (f"Enhanced Resume: {st.session_state['enhanced_resume']}\n"
-                          "Provide suggestions for career growth, including skills to acquire.")
-                career_suggestions = interact_with_gpt(prompt)
-                st.session_state["career_suggestions"] = career_suggestions
-
-    # Display career improvement suggestions
-    if "career_suggestions" in st.session_state:
-        st.subheader("Career Improvement Suggestions (Including X-Factor):")
-        st.text_area("", st.session_state["career_suggestions"], height=200, key="career_suggestions")
+stored_resume = get_user_resume_from_db(username)
+if stored_resume:
+    st.write("Debug: Resume found in database.")
+    resume_text = extract_text_from_file(stored_resume)
+    st.subheader("Your Current Resume:")
+    st.text_area("", resume_text, height=300)
 else:
     st.warning("No resume found for the user. Please upload a resume first.")
+    resume_text = None
+
+#######################################################################################################
+# AGENT INTERACTION SECTION
+#######################################################################################################
+
+job_description = st.text_area("Add Job Description (optional):", "", height=100)
+
+# Pre-create text areas for agent outputs
+if "clarity_suggestions" not in st.session_state:
+    st.session_state["clarity_suggestions"] = ""
+if "impact_suggestions" not in st.session_state:
+    st.session_state["impact_suggestions"] = ""
+if "experience_prioritization_suggestions" not in st.session_state:
+    st.session_state["experience_prioritization_suggestions"] = ""
+if "skills_matching_suggestions" not in st.session_state:
+    st.session_state["skills_matching_suggestions"] = ""
+if "visual_scan_suggestions" not in st.session_state:
+    st.session_state["visual_scan_suggestions"] = ""
+if "ats_optimization_suggestions" not in st.session_state:
+    st.session_state["ats_optimization_suggestions"] = ""
+if "tailoring_suggestions" not in st.session_state:
+    st.session_state["tailoring_suggestions"] = ""
+if "branding_suggestions" not in st.session_state:
+    st.session_state["branding_suggestions"] = ""
+if "consistency_suggestions" not in st.session_state:
+    st.session_state["consistency_suggestions"] = ""
+
+if resume_text:
+    st.subheader("Clarity Enhancement Agent")
+    if st.button("Enhance Clarity"):
+        st.session_state["clarity_suggestions"] = clarity_agent(resume_text)
+    st.text_area("Clarity Enhancement Suggestions:", st.session_state["clarity_suggestions"], height=150)
+
+    st.subheader("Impact Enhancement Agent")
+    if st.button("Enhance Impact"):
+        st.session_state["impact_suggestions"] = impact_agent(resume_text)
+    st.text_area("Impact Enhancement Suggestions:", st.session_state["impact_suggestions"], height=150)
+
+    st.subheader("Experience Prioritization Agent")
+    if st.button("Prioritize Job Experience"):
+        st.session_state["experience_prioritization_suggestions"] = experience_prioritization_agent(resume_text)
+    st.text_area("Experience Prioritization Suggestions:", st.session_state["experience_prioritization_suggestions"], height=150)
+
+    st.subheader("Skills Matching Agent")
+    if st.button("Enhance Skills"):
+        st.session_state["skills_matching_suggestions"] = skills_matching_agent(resume_text, job_description)
+    st.text_area("Skills Matching Suggestions:", st.session_state["skills_matching_suggestions"], height=150)
+
+    st.subheader("Visual Scan Enhancement Agent")
+    if st.button("Optimize for Visual Scan"):
+        st.session_state["visual_scan_suggestions"] = visual_scan_agent(resume_text)
+    st.text_area("Visual Scan Suggestions:", st.session_state["visual_scan_suggestions"], height=150)
+
+    st.subheader("ATS Compatibility Agent")
+    if st.button("Optimize for ATS"):
+        st.session_state["ats_optimization_suggestions"] = ats_compatibility_agent(resume_text)
+    st.text_area("ATS Optimization Suggestions:", st.session_state["ats_optimization_suggestions"], height=150)
+
+    st.subheader("Tailoring Agent")
+    if st.button("Tailor Resume"):
+        st.session_state["tailoring_suggestions"] = tailoring_agent(resume_text, job_description)
+    st.text_area("Tailoring Suggestions:", st.session_state["tailoring_suggestions"], height=150)
+
+    st.subheader("Branding Enhancement Agent")
+    if st.button("Enhance Branding"):
+        st.session_state["branding_suggestions"] = branding_agent(resume_text)
+    st.text_area("Branding Enhancement Suggestions:", st.session_state["branding_suggestions"], height=150)
+
+    st.subheader("Consistency Agent")
+    if st.button("Ensure Consistency"):
+        st.session_state["consistency_suggestions"] = consistency_agent(resume_text)
+    st.text_area("Consistency Suggestions:", st.session_state["consistency_suggestions"], height=150)
+
+#######################################################################################################
+# GENERATE ENHANCED RESUME BASED ON ALL SUGGESTIONS
+#######################################################################################################
+
+if st.button("Generate Enhanced Resume"):
+    combined_suggestions = (
+        f"Clarity Suggestions:\n{st.session_state['clarity_suggestions']}\n\n"
+        f"Impact Enhancement Suggestions:\n{st.session_state['impact_suggestions']}\n\n"
+        f"Experience Prioritization Suggestions:\n{st.session_state['experience_prioritization_suggestions']}\n\n"
+        f"Skills Matching Suggestions:\n{st.session_state['skills_matching_suggestions']}\n\n"
+        f"Visual Scan Suggestions:\n{st.session_state['visual_scan_suggestions']}\n\n"
+        f"ATS Optimization Suggestions:\n{st.session_state['ats_optimization_suggestions']}\n\n"
+        f"Tailoring Suggestions:\n{st.session_state['tailoring_suggestions']}\n\n"
+        f"Branding Suggestions:\n{st.session_state['branding_suggestions']}\n\n"
+        f"Consistency Suggestions:\n{st.session_state['consistency_suggestions']}\n"
+    )
+
+    # Create enhanced resume based on all suggestions
+    enhanced_resume_prompt = {
+        'system': "You are an expert resume writer. Do not fabricate any information or add details that are not already present in the suggestions or original resume.",
+        'user': f"Using the following suggestions, generate an enhanced version of the user's resume:\n\n{combined_suggestions}\n\nOriginal Resume:\n{resume_text}"
+    }
+    enhanced_resume = interact_with_agent(enhanced_resume_prompt)
+
+    st.subheader("Enhanced Resume Template:")
+    st.text_area("", enhanced_resume, height=300)
 
 #######################################################################################################
 # UPLOAD AND DISPLAY NEW RESUME
@@ -293,12 +306,13 @@ else:
 
 st.subheader("Upload a New Resume:")
 uploaded_file = st.file_uploader("Upload your resume (as a .txt, .pdf, or .docx):", type=["txt", "pdf", "docx"])
-
 if uploaded_file:
-    # Check the file type and read the resume
     file_type = uploaded_file.type
-    # Save or process the uploaded resume as needed
     if file_type == "text/plain":
         new_resume = uploaded_file.read().decode("utf-8")
     else:
-        new_resume = uploaded_file.read()
+        new_resume = extract_text_from_file(uploaded_file.read())
+    resume_text = new_resume if new_resume else resume_text
+    st.session_state["resume_text"] = resume_text
+    st.text_area("", resume_text, height=300)
+    st.write("Debug: Resume uploaded successfully.")
