@@ -33,7 +33,7 @@ def companies_linkedin_batch():
             print(job)
             name = job['job_details']['Company Name']
             if name:
-                company_name = re.sub(r'[^a-zA-Z0-9]', '', name)
+                company_name = re.sub(r'[^a-zA-Z0-9]', '', name)    #Remove whitespaces and special characters, will likely match linkedin URL slug
                 params = {
                     'url': f'https://www.linkedin.com/company/{company_name}/',
                     'categories': 'include',
