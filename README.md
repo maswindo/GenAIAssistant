@@ -2,9 +2,13 @@ BEMA - The Interactive AI Model
 
 We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot much like ChatGPT. It can also be used for the specific case of writing a resume based on a job link that the user provides. 
 
-1. First clone the repository using git clone
+1. Install Python onto your system (3.12.6 reccommended and tested for).
 
-2. Create a python virtual environment:
+2.  Clone the repository using git clone
+   
+3.  Create a .env file in the file directory with the repository that includes all your API keys.
+
+4. Create a python virtual environment in your system's terminal:
    
       Create a Python virtual environment for Windows
    
@@ -22,11 +26,14 @@ We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot m
    
       `source venv/bin/activate`
 
-4. Once the virtual environment is activated please run this in the terminal command line of the project
+5. Once the virtual environment is activated go to the directory folder of the repository on your system.
 
+   `cd YOURFILEPATH` for Windows
+   
+6. Afterwards, use pip to install all the requirements for the project.
    `pip install -r requirements.txt`
-
-5. Finally run the command below to start the project:
+   
+7.  Run the application by using the command below to start the project in your terminal:
 
    `streamlit run Login.py`
 
