@@ -9,11 +9,12 @@ from geopy.geocoders import GoogleV3
 import pandas as pd
 import time
 from geopy.exc import GeocoderTimedOut
+import itertools
+from collections import Counter
 
 ###
 #This class displays analytics for internal use and triggers for testing functions
 ###
-#TODO Applicants Analytics - apply to job post from multiple applicant profiles then extract simple data points
 
 # Initialize Database and Session Variables
 load_dotenv('../.env',override=True)
@@ -31,6 +32,7 @@ if not uri or not GOOGLE_API_KEY:
 
 tlsCAFile = certifi.where()
 
+
 # MongoDB connection with error handling
 try:
     client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
@@ -41,6 +43,35 @@ except Exception as e:
     st.error(f"Database connection failed: {e}")
     st.stop()
 
+#Analytics Functions
+"""
+What factors would result in a competitive rating? 
+What makes something competitive?
+Number of people vs number of openings
+Quality of competitors
+What effect does competition have on success probability?
+Decreases success probability
+Success probability built from a large number of variables per user
+Competitive aspect per job listing therefore determines all users compete with each other
+From the perspective of a single user:
+Applicants with lower compatibility effect success odds less than applicant with higher or similar compatibility
+Number of applicants, depending on distribution, effect user's competitive ranking like so.
+Note: Requires integration with job_compatibility functionality
+"""
+def get_post_competition_distribution():
+    #Returns a bar graph representing the distribution of applicants according to their competitive ranking for a job listing
+    return None
+
+def calculate_competitive_ranking():
+    #Calculates a users competitive ranking
+    return None
+
+#Post popularity compares number of applicants to a job listing to all other n0. of applicants in a job listing within a specified timeframe
+def get_post_popularity():
+    return None
+
+#
+#Front End
 st.header("Locations of Users and Job Listings")
 
 # Query for city and state data from job postings or users
@@ -120,6 +151,7 @@ st.header("Job Post Analytics")
 job_postings_applicants = collection_jobs.find({}, {'_id': 1, 'applicants': 1, 'job_details.Job Title' : 1, 'job_details.Company Name' : 1, 'job_details.Location' : 1})
 
 job_app_tuple = []
+#Retrieves all jobs with applicants
 for posting in job_postings_applicants:
     job_title = posting.get('job_details', {}).get('Job Title', '')
     company_name = posting.get('job_details', {}).get('Company Name', '')
@@ -129,15 +161,51 @@ for posting in job_postings_applicants:
     if job_title and company_name and applicants and location:
         job_app_tuple.append((job_title, company_name, applicants, location))
 
+#Gathers cursor to applicants with relevant data, creates lists of specified data, finds the mode of each field
+def get_applicant_modes(applicants):
+    user_ids = [item['user_id'] for item in applicants]
+    applicant_data = collection_users.find({'username': {'$in': user_ids}}, {'resume_fields.Education': 1,'resume_fields.Contact Information.Location':1,'resume_fields.Work Experience.Position':1,'resume_fields.Skills':1})
+    locations_list = []
+    skills = [{}]
+    positions = []
+    degrees = []
+    for applicant in applicant_data:
+        locations_list.append(applicant.get('resume_fields', {}).get('Contact Information', {}).get('Location',''))
+        skills.append(applicant.get('resume_fields', {}).get('Skills', {}))
+        for work_experience in applicant.get('resume_fields', {}).get('Work Experience', []):
+            positions.append(work_experience.get('Position',''))
+        for education in applicant.get('resume_fields', {}).get('Education', []):
+            degrees.append(education.get('Degree',''))
+
+    skills_list = list(itertools.chain.from_iterable(
+        [value for item in skills for value in (item.values() if isinstance(item, dict) else [item])]))
+    degree_counter = Counter(degrees)
+    location_counter = Counter(locations_list)
+    skills_counter = Counter(skills_list)
+    positions_counter = Counter(positions)
+    largest_degree_freq = max(degree_counter.values())
+    largest_loc_freq = max(location_counter.values())
+    largest_skill_freq = max(skills_counter.values())
+    largest_pos_freq = max(positions_counter.values())
+    degree_mode = [key for key, value in degree_counter.items() if value == largest_degree_freq]
+    location_mode = [key for key, value in location_counter.items() if value == largest_loc_freq]
+    skill_mode = [key for key, value in skills_counter.items() if value == largest_skill_freq]
+    pos_mode = [key for key, value in positions_counter.items() if value == largest_pos_freq]
+    applicant_modes = [location_mode,skill_mode,pos_mode,degree_mode]
+    return applicant_modes
+
+#Displays job post data
 with st.expander("Jobs with Applicants List", expanded=False):
     if job_app_tuple:
         for job_title, company_name, applicants, location in job_app_tuple:
+            applicant_modes = get_applicant_modes(applicants)
             st.subheader(job_title)
             st.write(company_name)
             st.write(location)
             st.write(f'No. of Applicants: {len(applicants)}')
             st.write('Post Popularity: ')
-            st.write('Applicants Qualifications: ')
-            st.write('Applicants Demographics: ')
-            st.write('Applicants Salary Expectations: ')
-            st.write('Applicants Match Probability: ')
+            st.write('Applicants Profile')
+            st.write(f'Most common skill: {applicant_modes[1]}')
+            st.write(f'Most common degree: {applicant_modes[3]}')
+            st.write(f'Most common location: {applicant_modes[0]}')
+            st.write(f'Most common previous occupation: {applicant_modes[2]}')
