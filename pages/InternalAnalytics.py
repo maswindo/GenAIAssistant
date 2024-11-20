@@ -66,7 +66,7 @@ def calculate_competitive_ranking():
     #Calculates a users competitive ranking
     return None
 
-#Post popularity compares number of applicants to a job listing to all other n0. of applicants in a job listing within a specified timeframe
+#Post popularity compares number of applicants to a job listing to all other no. of applicants in a job listing within a specified timeframe
 def get_post_popularity():
     return None
 
@@ -204,8 +204,9 @@ with st.expander("Jobs with Applicants List", expanded=False):
             st.write(location)
             st.write(f'No. of Applicants: {len(applicants)}')
             st.write('Post Popularity: ')
-            st.write('Applicants Profile')
-            st.write(f'Most common skill: {applicant_modes[1]}')
-            st.write(f'Most common degree: {applicant_modes[3]}')
-            st.write(f'Most common location: {applicant_modes[0]}')
-            st.write(f'Most common previous occupation: {applicant_modes[2]}')
+            with st.expander('Applicants Profile'):
+                st.write(f'Most common skill: {applicant_modes[1]}')
+                st.write(f'Most common degree: {applicant_modes[3]}')
+                st.write(f'Most common location: {applicant_modes[0]}')
+                st.write(f'Most common previous occupation: {applicant_modes[2]}')
+            st.write('---')
