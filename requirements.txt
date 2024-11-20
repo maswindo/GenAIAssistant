@@ -22,3 +22,5 @@ streamlit~=1.39.0
 streamlit_chat~=0.1.1
 tavily-python==0.3.1
 tornado~=6.4
+pdfplumber
+pytesseract~=0.3.10
