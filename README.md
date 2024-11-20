@@ -28,14 +28,15 @@ We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot m
 
 5. Once the virtual environment is activated go to the directory folder of the repository on your system.
 
-   `cd YOURFILEPATH` for Windows
+      `cd YOURFILEPATH` for Windows
    
 6. Afterwards, use pip to install all the requirements for the project.
-   `pip install -r requirements.txt`
-   
-7.  Run the application by using the command below to start the project in your terminal:
 
-   `streamlit run Login.py`
+      `pip install -r requirements.txt`
+   
+8.  Run the application by using the command below to start the project in your terminal:
+
+      `streamlit run Login.py`
 
 That should take you to this page where you can interact with our application.
 <img width="1123" alt="image" src="https://github.com/Teccon1998/GenAIAssistant/assets/43446163/07388579-22e6-4c7c-b2d5-f016de5e4d4d">
