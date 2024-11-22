@@ -21,4 +21,6 @@ langchainhub~=0.1.15
 python_docx==1.0.1
 langchain-core~=0.1.43
 PyPDF2~=3.0.1
+serpapi
+google-search-results
 
