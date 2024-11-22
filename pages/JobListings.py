@@ -4,7 +4,9 @@ import streamlit as st
 from dotenv import load_dotenv
 import os
 import certifi
-
+from bson import json_util
+import datetime
+from pymongo.errors import PyMongoError
 ###
 #This class lists all jobs in mongodb database
 ###
@@ -15,8 +17,12 @@ tlsCAFile = certifi.where()
 client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
 db = client['499']
 collection = db['jobs']
-job_postings = collection.find({})
+job_posts = collection.find()
 user_id = st.session_state.get('username')
+
+@st.cache_data(ttl=3600)
+def getJobList():
+    return list(job_posts)
 
 if not uri:
     st.error("Environment variables are missing. Please check the .env file.")
@@ -24,13 +30,14 @@ if not uri:
 # Front End
 st.title('Job Listings')
 
-if job_postings:
+job_list = getJobList()
+if job_list:
     # Add a search bar
     search_query = st.text_input("Search for a job title", "")
 
     # Filter the job postings based on the search query
     filtered_jobs = []
-    for job in job_postings:
+    for job in job_list:
         job_details = job.get("job_details", {})
         job_title = job_details.get("Job Title", "").lower()
 
@@ -57,9 +64,6 @@ if job_postings:
             st.write(f"**Location:** {location}")
             st.write(f"**Employment Type:** {employment_type}")
             st.write(f"**Summary:** {summary}")
-
-            import datetime
-            from pymongo.errors import PyMongoError
 
             if st.button("Apply Here", key=f"apply_button_{job['_id']}"):
                 try:

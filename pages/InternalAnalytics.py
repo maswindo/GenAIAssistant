@@ -75,18 +75,28 @@ def get_post_popularity():
 st.header("Locations of Users and Job Listings")
 
 # Query for city and state data from job postings or users
-job_postings = collection_jobs.find({}, {'_id': 0, 'job_details.Location': 1})
-users = collection_users.find({}, {'_id': 0, 'resume_fields.Contact Information.Location': 1})
+jobs_cursor = collection_jobs.find({}, {'_id': 0, 'job_details.Location': 1})
+users_cursor = collection_users.find({}, {'_id': 0, 'resume_fields.Contact Information.Location': 1})
 
+@st.cache_data(ttl=3600)
+def getJobLocationsList():
+    return list(jobs_cursor)
+
+@st.cache_data(ttl=3600)
+def getUserLocationsList():
+    return list(users_cursor)
+
+job_locations = getJobLocationsList()
+user_locations = getUserLocationsList()
 # Combine the location data from job postings and users into one list
 city_state_pairs = []
-for posting in job_postings:
-    location_str = posting.get('job_details', {}).get('Location', '')
+for job_location in job_locations:
+    location_str = job_location.get('job_details', {}).get('Location', '')
     if location_str:
         city_state_pairs.append((location_str, 'job'))
 
-for user in users:
-    location_str = user.get('resume_fields', {}).get('Contact Information', {}).get('Location', '')
+for user_location in user_locations:
+    location_str = user_location.get('resume_fields', {}).get('Contact Information', {}).get('Location', '')
     if location_str:
         city_state_pairs.append((location_str, 'user'))
 
@@ -148,20 +158,31 @@ st.plotly_chart(fig)
 
 st.header("Job Post Analytics")
 
-job_postings_applicants = collection_jobs.find({}, {'_id': 1, 'applicants': 1, 'job_details.Job Title' : 1, 'job_details.Company Name' : 1, 'job_details.Location' : 1})
+applicants_cursor = collection_jobs.find({}, {'_id': 1, 'applicants': 1, 'job_details.Job Title' : 1, 'job_details.Company Name' : 1, 'job_details.Location' : 1})
 
-job_app_tuple = []
+@st.cache_data(ttl=3600)
+def getApplicantList():
+    return list(applicants_cursor)
+
+job_posts_applicants = getApplicantList()
+
 #Retrieves all jobs with applicants
-for posting in job_postings_applicants:
-    job_title = posting.get('job_details', {}).get('Job Title', '')
-    company_name = posting.get('job_details', {}).get('Company Name', '')
-    location = posting.get('job_details', {}).get('Location', '')
-    applicants = posting.get('applicants', '')
+@st.cache_data(ttl=3600)
+def getJobAppTuple():
+    job_app_tuple = []
+    for post in job_posts_applicants:
+        job_title = post.get('job_details', {}).get('Job Title', '')
+        company_name = post.get('job_details', {}).get('Company Name', '')
+        location = post.get('job_details', {}).get('Location', '')
+        applicants = post.get('applicants', '')
 
-    if job_title and company_name and applicants and location:
-        job_app_tuple.append((job_title, company_name, applicants, location))
+        if job_title and company_name and applicants and location:
+            job_app_tuple.append((job_title, company_name, applicants, location))
+
+    return job_app_tuple
 
 #Gathers cursor to applicants with relevant data, creates lists of specified data, finds the mode of each field
+@st.cache_data(ttl=3600)
 def get_applicant_modes(applicants):
     user_ids = [item['user_id'] for item in applicants]
     applicant_data = collection_users.find({'username': {'$in': user_ids}}, {'resume_fields.Education': 1,'resume_fields.Contact Information.Location':1,'resume_fields.Work Experience.Position':1,'resume_fields.Skills':1})
@@ -194,6 +215,7 @@ def get_applicant_modes(applicants):
     applicant_modes = [location_mode,skill_mode,pos_mode,degree_mode]
     return applicant_modes
 
+job_app_tuple = getJobAppTuple()
 #Displays job post data
 with st.expander("Jobs with Applicants List", expanded=False):
     if job_app_tuple:
