@@ -38,22 +38,23 @@ That should take you to this page where you can interact with our application.
 
 
 
-## Mongo DB Setup 
+## MongoDB Setup
 
-1.	Sign in to MongoDB Atlas or set up a MongoDB instance locally.
+1. Sign in to **MongoDB Atlas** or set up a **MongoDB instance locally**.
 
-2.	Create a new cluster in MongoDB Atlas or use an existing one.
+2. Create a new cluster in MongoDB Atlas or use an existing one.
 
-3.	In the cluster settings:
-	•	Whitelist your IP address to allow your application to connect.
-	•	Create a database user with proper credentials for access.
+3. In the cluster settings:
+   - **Whitelist your IP address** to allow your application to connect.
+   - **Create a database user** with proper credentials for access.
 
-4. Add your MongoDB connection string to the .env file in the root directory of the project
+4. Add your **MongoDB connection string** to the `.env` file in the root directory of the project:
 
-5. To find the tlsCAFile on your machine run the following:
+5.	To find the tlsCAFile on your machine, run the following Python code:
 
+```
 import certifi
 tlsCAFile = certifi.where()
 print(tlsCAFile)
-
-store this path in your .env file 
+```
+6. Store this path in your .env file 
