@@ -1,7 +1,6 @@
 import os
 import requests
 from dotenv import load_dotenv
-
 import json  # Import json for better handling of json data
 from serpapi import GoogleSearch
 
@@ -29,7 +28,7 @@ def get_linkedin_url(person_name, company_name):
     # Extract LinkedIn profile URL
     for result in results.get("organic_results", []):
         if "linkedin.com/in" in result.get("link", ""):
-            print (result["link"])
+            print(f"Linkedin URL result for get_linkedin_url function: {result['link']}")
             return result["link"]  # Directly return the LinkedIn URL if found
 
     # Return None if no LinkedIn profile URL was found
@@ -72,26 +71,21 @@ def get_leadership_team_info(company_name: str, team_members: list):
     team_info = []
     
     for member in team_members:
-        
         company = company_name
         name = member.get("name", "Name not found")
         description = member.get("description", "Description not found")
-        #linkedin_url = member.get("linkedin_url")
+
+        # linkedin_url = member.get("linkedin_url")
         linkedin_url = get_linkedin_url(name, company)
         
         if linkedin_url:
-            # Fetch LinkedIn profile data
-            profile_data = scrapelinkedinprofile(linkedin_url)
-            if profile_data:
-                # Construct LinkedIn URL using 'public_identifier'
-                linkedin_profile_url = f"https://www.linkedin.com/in/{profile_data.get('public_identifier')}"
-
-                
+            
+            if linkedin_url:
+    
                 team_member_info = {
-                    "name": profile_data.get("full_name", name),
-                    "profile_pic_url": profile_data.get("profile_pic_url", "None"),
+                    "name": member.get("name", name),
                     "description": description,
-                    "linkedin_url": linkedin_profile_url,
+                    "linkedin_url": linkedin_url,
                 }
                 team_info.append(team_member_info)
 
@@ -101,5 +95,5 @@ def get_leadership_team_info(company_name: str, team_members: list):
         else:
             print(f"LinkedIn URL not available for {name}")
 
-    print (team_info)
+    print(f"Here is the get_leadership_team_info:\n{team_info}")
     return team_info

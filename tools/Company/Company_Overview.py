@@ -7,15 +7,16 @@ from langchain.agents import load_tools
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from serpapi import GoogleSearch
 import re
 from tools.ProxyCurlLinkedIn import get_leadership_team_info
+
 
 
 load_dotenv()
 SERP_API_KEY = os.getenv("SERPAPI_API_KEY")
 
-llm = chat = ChatOpenAI(model="gpt-4", temperature=0)
+from langchain.chat_models import ChatOpenAI
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 # use SERPAPI
 def search_google_top_results(query: str):
@@ -28,10 +29,56 @@ def search_google_top_results(query: str):
     print("Here are the results")
     print (results)
     return results
+
+def extract_data_with_regex(response):
+    try:
+        # Extract Overview
+        overview_match = re.search(r'"Overview":\s*"(.*?)"', response)
+        overview = overview_match.group(1) if overview_match else "Overview not found."
+
+        # Extract Mission
+        mission_match = re.search(r'"Mission":\s*"(.*?)"', response)
+        mission = mission_match.group(1) if mission_match else "Mission not found."
+
+        # Extract Company Culture
+        culture_match = re.search(r'"Company Culture":\s*"(.*?)"', response)
+        culture = culture_match.group(1) if culture_match else "Culture not found."
+
+        # Extract Values (Top 5 Company Values)
+        values_match = re.search(r'"Top 5 Company Values":\s*\[(.*?)\]', response, re.DOTALL)
+        if values_match:
+            # Match the inner list content
+            values_raw = values_match.group(1)
+            # Extract individual values from the list
+            values = re.findall(r'"(.*?)"', values_raw)
+        else:
+            values = []
+
+        # Extract Leadership
+        leadership_match = re.search(r'"Leadership":\s*\[(.*?)\]', response, re.DOTALL)
+        if leadership_match:
+            leadership_raw = leadership_match.group(1)
+            leadership = re.findall(r'"Name":\s*"(.*?)".*?"Description":\s*"(.*?)"', leadership_raw, re.DOTALL)
+            leadership = [{"name": name, "description": description} for name, description in leadership]
+        else:
+            leadership = []
+
+        # Return extracted data
+        return {
+            "overview": overview,
+            "mission": mission,
+            "culture": culture,
+            "values": values,
+            "leadership": leadership,
+        }
+
+    except Exception as e:
+        print(f"Error extracting data: {e}")
+        return {"error": str(e)}
   
 
 # Function to extract data for the company using different queries
-def extract_and_scrape_company_data(company_name: str):
+def extract_and_scrape_company_overview_data(company_name: str):
     data = {}
 
     # Different search queries for different sections
@@ -39,7 +86,7 @@ def extract_and_scrape_company_data(company_name: str):
     mission_query = f"{company_name} company mission"
     culture_query = f"{company_name} company culture"
     values_query = f"{company_name} company core values"
-    leadership_query = f"{company_name} top leadership team"
+    leadership_query = f"{company_name} top 3 leadership team"
 
     # Search and scrape for each section
     overview_results = search_google_top_results(overview_query)
@@ -58,51 +105,40 @@ def extract_and_scrape_company_data(company_name: str):
 
     # Format the data using the LLM to generate a summary of each section 
     formatted_data = format_company_data_with_llm(company_name, data)
+    formatted_data["serp_overview"] = overview_results 
+    formatted_data["serp_mission"] = mission_results
+    formatted_data["serp_culture"] = culture_results 
+    formatted_data["serp_values"] = values_results 
+    formatted_data["serp_leadership"] = leadership_results 
     return formatted_data
 
 # LLM Integration to format the scraped data into concise summaries
 def format_company_data_with_llm(company_name: str, data: dict):
 
-    # prompt template to ask LLM to summarize each section using the scraped data
+# prompt template to ask LLM to summarize each section using the scraped data
     prompt_template = PromptTemplate(
         input_variables=["company_name", "overview", "mission", "culture", "values", "leadership"],
         template="""
         Please provide a concise and well-structured summary for the following information about {company_name}:
-        
-        Overview (summarize this information under 40 words):
+
+        Overview (summarize this information under 60 words):
         {overview}
 
-        Mission (summarize this information under 40 words):
+        Mission (summarize this information under 60 words):
         {mission}
 
-        Company Culture (summarize this information under 40 words):
+        Company Culture (summarize this information under 60 words):
         {culture}
 
-        Only list Top 5 Company Values (summarize this information and list the top 5(1., 2., 3., 4., 5.)):
+        Only list Top 5 Company Values (summarize this information and list the top 5:
         {values}
 
         Leadership (Based on the information provided below, list the leadership team of {company_name})
         Give only the top 3 people and for each provide the Name and Description (title of member at company)
         {leadership}
 
-        here is a format example
-        1.
-        Name: name
-        Description: the title of member at company
-       
-        2.
-        Name: 
-        Description: 
-        
-        
-        3.
-        Name: 
-        Description: 
-  
-
-
-        
-        Ensure that the summaries are clear, concise, and capture the overall key points.
+        Ensure that the summaries are clear, concise, and capture the overall key points. 
+        I want the response in a JSON format
         """
     )
 
@@ -118,44 +154,32 @@ def format_company_data_with_llm(company_name: str, data: dict):
         "values": "\n".join(data.get('values', [])),
         "leadership": "\n".join(data.get('leadership', []))
     })
-    
-    print (formatted_response)
-    # Function to parse formatted response
-    # Use regex to extract sections from the formatted response
-    
-    overview_match = re.search(r"Overview:\n(.*?)\nMission:", formatted_response, re.DOTALL)
-    mission_match = re.search(r"Mission:\n(.*?)\nCompany Culture:", formatted_response, re.DOTALL)
-    culture_match = re.search(r"Company Culture:\n(.*?)\nTop 5 Company Values:", formatted_response, re.DOTALL)
-    values_match = re.search(r"Top 5 Company Values:\n(.*?)(?:\nLeadership|$)", formatted_response, re.DOTALL)
-    leadership_match = re.findall(r"\d+\.\s+Name:\s*(.*?)\n\s*Description:\s*(.*?)\n\s*", formatted_response, re.DOTALL)
+
+    # Print the formatted response with a message
+    print("\nHere is the formatted response from the LLM:\n")
+    print(formatted_response)
+
+    extracted_data = extract_data_with_regex(formatted_response)
+    extracted_data["company"] = company_name
+    # Print the formatted response with a message
+    print("\nHere is the formatted response with regex:\n")
+    print(extracted_data)
+
+    # Enrich leadership team data if necessary
+    enriched_leadership_data = get_leadership_team_info(company_name, extracted_data["leadership"])
+    extracted_data["leadership"] = enriched_leadership_data
+
+    #add serapi results to dataset
 
 
 
-    # Clean up and format the extracted sections
-    data = {
-        "company": company_name,
-        "overview": overview_match.group(1).strip() if overview_match else "Overview not found.",
-        "mission": mission_match.group(1).strip() if mission_match else "Mission not found.",
-        "culture": culture_match.group(1).strip() if culture_match else "Culture not found.",
-        "values": [v.strip() for v in values_match.group(1).split('\n') if v.strip()] if values_match else [],
-        "leadership": [
-        {"name": name.strip(), "description": description.strip() }
-        for name, description in leadership_match
-    ]
+    return extracted_data
 
 
-    }
 
-    enriched_leadership_data = get_leadership_team_info(company_name, data["leadership"])
-    data["leadership"] = enriched_leadership_data
-
-    print (data)  
-    return data
-      
-    
 
 # MongoDB Storage Function to store the data
-def store_company_data(formatted_response):
+def store_company_overview_data(formatted_response):
 
     uri = os.environ.get('URI_FOR_Mongo')  # Load MongoDB URI from the environment
     #tlsCAFile = os.getenv('tlsCAFile')  # Load tlsCAFile from the environment
@@ -172,60 +196,20 @@ def store_company_data(formatted_response):
     db = client[database_name]
     collection = db[collection_name]
     
-    
     # Insert data into MongoDB
     result = collection.insert_one(formatted_response)
     print("Data inserted with ID:", result.inserted_id)
     client.close()
 
 
-def get_review_urls(company_name):
-    query_glassdoor = f"Glassdoor {company_name} company reviews"
-    query_indeed = f"Indeed {company_name} company reviews"
-
-    # Configure GoogleSearch parameters
-    search_params = {
-        "engine": "google",
-        "q": query_glassdoor,
-        "api_key": SERP_API_KEY,
-    }
-
-    # Run the search for Glassdoor
-    search = GoogleSearch(search_params)
-    results = search.get_dict()
-    glassdoor_url = None
-    for result in results.get("organic_results", []):
-        if "glassdoor" in result.get("link", ""):
-            glassdoor_url = result["link"]
-            break
-
-    # Update search parameters for Indeed
-    search_params["q"] = query_indeed
-    search = GoogleSearch(search_params)
-    results = search.get_dict()
-    indeed_url = None
-    for result in results.get("organic_results", []):
-        if "indeed" in result.get("link", ""):
-            indeed_url = result["link"]
-            break
-
-    return glassdoor_url, indeed_url
-
-
-from serpapi import GoogleSearch
-
-
-
-
-
- 
-# Main function to generate, scrape, format, and store company data
-def generate_company_data(company_name: str):
-    company_data = extract_and_scrape_company_data(company_name)
-    store_company_data(company_data)
-
-    glassdoor_url, indeed_url = get_review_urls(company_name)
-    print("Glassdoor URL:", glassdoor_url)
-    print("Indeed URL:", indeed_url)
-
+# function to generate, scrape, format, and store company data
+def generate_company_overview_data(company_name: str):
+    company_data = extract_and_scrape_company_overview_data(company_name)
+    store_company_overview_data(company_data)
     return company_data
+
+
+
+
+       
+
