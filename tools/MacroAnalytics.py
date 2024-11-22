@@ -2,6 +2,9 @@ import os
 import requests
 from dotenv import load_dotenv
 from openai import OpenAI
+import certifi
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 load_dotenv('../.env')
 user_id = os.getenv('CAREERONE_USER_ID')
@@ -226,6 +229,8 @@ A:
 4.  Take macro data
 5.  Assess how trends will affect user
 """
+
+
 def getLocalSalary():
     # Define the base URL and parameters
     base_url = "https://api.careeronestop.org/v1/comparesalaries/{userId}/wage"
@@ -261,7 +266,22 @@ def getLocalSalary():
     else:
         # Handle errors
         print(f"Error: {response.status_code} - {response.text}")
+def getUserLocation(user_data):
+    location = user_data.get('resume_fields')
 
+def getUserInformation(user_id):
+    db = connect_to_mongo()
+    collection_user_data = db['files_uploaded']
+    user_data = collection_user_data.find_one({'username': user_id},)
+    return user_data
 
-getLocalSalary()
+def connect_to_mongo():
+    uri = os.environ.get('URI_FOR_Mongo')
+    tlsCAFile = certifi.where()
+    client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
+    return client['499']
+
+def init():
+
+print(getLocalSalary())
 
