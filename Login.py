@@ -47,6 +47,7 @@ def check_credentials(username_from_client, password_from_client):
 
 def logout():
     st.session_state.clear()
+    st.cache_data.clear()
     st.rerun()
 
 st.title("Login")
