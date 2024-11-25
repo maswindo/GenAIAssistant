@@ -5,8 +5,12 @@ import os
 from dotenv import load_dotenv
 import certifi
 from streamlit import session_state
-
+import atexit
 load_dotenv()
+
+def clear_cache_on_exit():
+    print("Clearing Cache...")
+    st.cache_data.clear()
 
 def check_credentials(username_from_client, password_from_client):
     # MongoDB URI without the tlsCAFile option
@@ -59,4 +63,6 @@ else:
         login = st.form_submit_button("Log In")
         if login:
             check_credentials(username, password)
+
+atexit.register(clear_cache_on_exit)
 
