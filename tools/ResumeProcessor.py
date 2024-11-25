@@ -135,9 +135,14 @@ def display_resume(uploaded_file):
 
     st.text_area("Resume Content", value=text)
 
-def get_user_resume(username):
+@st.cache_resource(ttl=3600)
+def connect_to_mongo():
     uri = os.getenv('URI_FOR_Mongo')
-    client = MongoClient(uri, server_api=ServerApi('1'))
+    return MongoClient(uri, server_api=ServerApi('1'))
+
+@st.cache_data(ttl=3600)
+def get_user_resume(username):
+    client = connect_to_mongo()
     db = client['499']
     collection = db['files_uploaded']
     user = collection.find_one({'username': username})
@@ -146,8 +151,7 @@ def get_user_resume(username):
     return None
 
 def get_resume_type(username):
-    uri = os.getenv('URI_FOR_Mongo')
-    client = MongoClient(uri, server_api=ServerApi('1'))
+    client = connect_to_mongo()
     db = client['499']
     collection = db['files_uploaded']
     user = collection.find_one({'username': username})
