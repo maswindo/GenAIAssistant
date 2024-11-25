@@ -17,7 +17,7 @@ from collections import Counter
 ###
 
 # Initialize Database and Session Variables
-load_dotenv('../.env',override=True)
+load_dotenv('../.env', override=True)
 uri = os.environ.get('URI_FOR_Mongo')
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 MAPBOX_API_KEY = os.environ.get('MAP_KEY')
@@ -69,10 +69,6 @@ def calculate_competitive_ranking():
 #Post popularity compares number of applicants to a job listing to all other no. of applicants in a job listing within a specified timeframe
 def get_post_popularity():
     return None
-
-#
-#Front End
-st.header("Locations of Users and Job Listings")
 
 # Query for city and state data from job postings or users
 jobs_cursor = collection_jobs.find({}, {'_id': 0, 'job_details.Location': 1})
@@ -154,10 +150,10 @@ fig = px.scatter_mapbox(df, lat="lat", lon="lng", color="category",
 fig.update_layout(mapbox_accesstoken=MAPBOX_API_KEY)
 
 # Show the map
-st.plotly_chart(fig)
+def getLocationMap():
+    return fig
 
-st.header("Job Post Analytics")
-
+#Job Post Analytics
 applicants_cursor = collection_jobs.find({}, {'_id': 1, 'applicants': 1, 'job_details.Job Title' : 1, 'job_details.Company Name' : 1, 'job_details.Location' : 1})
 
 @st.cache_data(ttl=3600)
@@ -217,18 +213,7 @@ def get_applicant_modes(applicants):
 
 job_app_tuple = getJobAppTuple()
 #Displays job post data
-with st.expander("Jobs with Applicants List", expanded=False):
-    if job_app_tuple:
-        for job_title, company_name, applicants, location in job_app_tuple:
-            applicant_modes = get_applicant_modes(applicants)
-            st.subheader(job_title)
-            st.write(company_name)
-            st.write(location)
-            st.write(f'No. of Applicants: {len(applicants)}')
-            st.write('Post Popularity: ')
-            st.write('Applicants Profile')
-            st.write(f'Most common skill: {applicant_modes[1]}')
-            st.write(f'Most common degree: {applicant_modes[3]}')
-            st.write(f'Most common location: {applicant_modes[0]}')
-            st.write(f'Most common previous occupation: {applicant_modes[2]}')
-            st.write('---')
+def getJobPostAnalytics():
+    return job_app_tuple
+
+

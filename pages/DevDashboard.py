@@ -9,6 +9,7 @@ from pymongo.server_api import ServerApi
 from tools.ResumeProcessor import process_resume
 from tools.ResumeProcessor import get_user_resume
 from tools.ProxyCurlCompany import companies_linkedin_batch
+from tools.InternalAnalytics import get_applicant_modes, getJobPostAnalytics, getLocationMap
 
 # Load variables
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
@@ -32,7 +33,7 @@ except Exception as e:
 
 
 #Page Title
-st.title("Developer Dashboard")
+st.title("Developer Dashboard - Internal Use Only")
 
 #Functions
 
@@ -81,3 +82,23 @@ st.subheader("Batch Company LinkedIn Gathering from Jobs Database")
 st.write("Works but Requires ProxyCurl Credits")
 if(st.button("Get Companies LinkedIn Data")):
     companies_linkedin_batch()
+
+#Function 5: Map of Users and Job Listings
+st.plotly_chart(getLocationMap())
+#Function 6:Job Post Applicant Analytics
+job_app_tuple = getJobPostAnalytics()
+with st.expander("Jobs with Applicants List", expanded=False):
+    if job_app_tuple:
+        for job_title, company_name, applicants, location in job_app_tuple:
+            applicant_modes = get_applicant_modes(applicants)
+            st.subheader(job_title)
+            st.write(company_name)
+            st.write(location)
+            st.write(f'No. of Applicants: {len(applicants)}')
+            st.write('Post Popularity: ')
+            st.write('Applicants Profile')
+            st.write(f'Most common skill: {applicant_modes[1]}')
+            st.write(f'Most common degree: {applicant_modes[3]}')
+            st.write(f'Most common location: {applicant_modes[0]}')
+            st.write(f'Most common previous occupation: {applicant_modes[2]}')
+            st.write('---')

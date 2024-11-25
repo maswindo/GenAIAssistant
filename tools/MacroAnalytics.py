@@ -229,13 +229,22 @@ A:
 4.  Take macro data
 5.  Assess how trends will affect user
 """
+us_states = [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+    "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+    "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+    "Wisconsin", "Wyoming"
+]
+#Find salary data for keyword(occupation) and location given
+def getLocalSalary(keyword, location):
+    import requests
 
-
-def getLocalSalary():
     # Define the base URL and parameters
     base_url = "https://api.careeronestop.org/v1/comparesalaries/{userId}/wage"
-    keyword = "Software Developers"  # Occupation to search for
-    location = "New York, NY"  # Location to search in
     enable_metadata = "false"  # Set to "false" to exclude metadata if desired
 
     # Format the full URL with user ID
@@ -257,31 +266,42 @@ def getLocalSalary():
     # Make the GET request
     response = requests.get(url, headers=headers, params=params)
 
-    # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
         data = response.json()
-        print("Occupation Title:", data['OccupationDetail']['OccupationTitle'])
-        print("Median Annual Salary:", data['OccupationDetail']['Wages']['NationalWagesList'][1]['Median'])
+
+        # Extract wages
+        state_wages = data.get('OccupationDetail', {}).get('Wages', {}).get('StateWagesList', [])
+        annual_wages = [wage for wage in state_wages if wage.get('RateType') == "Annual"]
+
+        if annual_wages:
+            wage_data = annual_wages[0]  # Pick the first matching wage entry
+            print("Occupation Title:", data['OccupationDetail']['OccupationTitle'])
+            print("Rate Type:", wage_data['RateType'])
+            print("Median Annual Salary:", wage_data['Median'])
+            print("State:", wage_data['AreaName'])
+        else:
+            print("No annual wage data available for this location.")
     else:
         # Handle errors
         print(f"Error: {response.status_code} - {response.text}")
-def getUserLocation(user_data):
-    location = user_data.get('resume_fields')
 
-def getUserInformation(user_id):
-    db = connect_to_mongo()
-    collection_user_data = db['files_uploaded']
-    user_data = collection_user_data.find_one({'username': user_id},)
-    return user_data
 
-def connect_to_mongo():
-    uri = os.environ.get('URI_FOR_Mongo')
-    tlsCAFile = certifi.where()
-    client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
-    return client['499']
+uri = os.environ.get('URI_FOR_Mongo')
+tlsCAFile = certifi.where()
+client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
+db = client['499']
 
-def init():
+def getJobSalariesByState():
+    for state in us_states:
+        getLocalSalary("Software Developers",state)
 
-print(getLocalSalary())
+getJobSalariesByState()
+"""
+collection_user_data = db['files_uploaded']
+user_cursor = collection_user_data.find_one({'username': username},)
+user_data = list(user_cursor.get('resume_fields', {}))"""
+
+
+
 
