@@ -30,6 +30,9 @@ if not uri or not GOOGLE_API_KEY:
     st.error("Environment variables are missing. Please check the .env file.")
     st.stop()
 
+# Initialize the geolocator (GoogleV3)
+geolocator = GoogleV3(api_key=GOOGLE_API_KEY)
+
 tlsCAFile = certifi.where()
 
 
@@ -96,8 +99,7 @@ for user_location in user_locations:
     if location_str:
         city_state_pairs.append((location_str, 'user'))
 
-# Initialize the geolocator (GoogleV3)
-geolocator = GoogleV3(api_key=GOOGLE_API_KEY)
+
 
 # Function to get coordinates from location string with retries
 @st.cache_data
@@ -143,7 +145,7 @@ fig = px.scatter_mapbox(df, lat="lat", lon="lng", color="category",
                         size="frequency", hover_name="category", hover_data=["lat", "lng", "frequency"],
                         color_discrete_map={"job": "red", "user": "blue"},
                         title="User and Job Locations",
-                        mapbox_style="carto-positron",  # You can use different Mapbox styles
+                        mapbox_style="carto-positron",
                         zoom=3)
 
 # Set the mapbox access token for the chart
