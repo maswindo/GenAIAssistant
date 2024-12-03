@@ -11,7 +11,7 @@ import pytesseract
 import io
 
 # Initialize OpenAI LLM for compatibility scoring
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.5, openai_api_key=os.getenv('OPENAI_API_KEY'))
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.5, openai_api_key=os.getenv('OPENAI_API_KEY'))
 
 #######################################################################################################
 # USER AUTHENTICATION AND GET USERNAME
@@ -106,7 +106,7 @@ if resume_data:
 
             # Set up prompt template for LLM
             # Set up prompt template for LLM with personalized context and experience calculation
-            #TODO -
+            #TODO MAKE OUTPUT MORE CONCISE, FIGURE OUT DOMAIN SIMILARITY EXPERIENCE
             prompt_template = PromptTemplate(
                 input_variables=['resume', 'job_description'],
                 template="""
@@ -115,7 +115,8 @@ if resume_data:
                 experience align with the job requirements based on the provided resume and job description. Consider 
                 the following factors for analyzing compatibility: level of relevant projects, years of experience, 
                 listed skill set, and qualifications such as certificates, degrees, and education relevant to the job 
-                posting.
+                posting. If you find the candidate missing requirements for the job posting, you are also experienced in
+                providing assistance to help the candidate find resources to assist them to being qualified.
 
                 Resume Data:
                 {resume}
@@ -124,19 +125,23 @@ if resume_data:
                 {job_description}
 
                 Instructions:
-                1. List the specific skills and qualifications from the resume that match the job requirements.
+                1. List the specific skills and qualifications from the resume that match the job requirements. For
+                   non-technical skills, consider how their previous experience can be applied to those non-technical skill
+                   requirements.
                 2. Identify any missing skills, qualifications, or experience in the resume compared to the job description.
                 3. Calculate the candidate's total experience in each relevant job listed, based on the start and end dates. 
                    Experience dates may be provided in various formats (e.g., "March 2015 – April 2019," "2017-2021," 
                    "July 2018 - Present"). Provide each job’s experience length in years and months, and then calculate 
                    the total relevant experience. Remember the current/present year is 2024.
                 4. Provide a compatibility score between 0 and 100 based on the alignment of skills, qualifications, 
-                   and experience. Weigh experience at 40% (if they have the required amount of experience or more, give
-                   them the full points), qualifications at 40%, and listed skill set at 20%. Only show the final score.
-                   (A score of 80 or above indicates a strong match.)
-                5. Highlight any areas where the candidate may improve to better match the job requirements. If possible, 
-                   suggest either websites or services that can assist in obtaining these requirements. Please keep your 
-                   response concise but informative.
+                   and experience. Weigh experience at 20% (if they have the required amount of experience or more, give
+                   them the full points), qualifications at 20%, and listed skill set at 60%. Provide them the fraction
+                   they earned from each category in your response (ex. Experience 15/20 Qualifications 15/20 Skills 60/60).
+                   A score of 85 or above indicates a strong match.
+                5. Highlight any areas where the candidate may improve to better match the job requirements. If the user
+                   is lacking certain skills or requirements provide where the user can learn those skills, and include
+                   direct links to the suggestions, this can include online courses, certification websites,
+                   boot camps relevant to the job position, and more.
                 """
             )
 
