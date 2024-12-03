@@ -1,7 +1,7 @@
 import streamlit as st
 import json
 from tools.ResumeProcessor import process_resume, get_user_resume  # Resume processing
-from tools.JobPostProcessor import process_job_listing  # Job description processing
+#from tools.JobPostProcessor import process_job_listing  # Job description processing
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
@@ -25,6 +25,7 @@ if 'username' in st.session_state and st.session_state['username']:
 else:
     st.error("You must be logged in to access this page.")
     st.stop()
+
 
 #######################################################################################################
 # FUNCTION TO PROCESS RESUME DATA INTO TEXT
@@ -76,9 +77,9 @@ resume_data = get_user_resume(username)
 
 if resume_data:
     # Process the resume to extract structured JSON data
-    #structured_resume = process_resume(resume_data)
+    # structured_resume = process_resume(resume_data)
 
-    #Process the resume to text
+    # Process the resume to text
     resume_text = process_resume_data(resume_data)
 
     # Display the user's resume data in text format
@@ -98,8 +99,8 @@ if resume_data:
             st.write("The job description could not be retrieved. Please check the job URL.")
         else:
             # Display structured job data
-            #st.subheader("Processed Job Description Data:")
-            #st.json(job_data)  # Display as JSON for clarity
+            # st.subheader("Processed Job Description Data:")
+            # st.json(job_data)  # Display as JSON for clarity
             # Prepare structured input for compatibility analysis
             combined_input = {
                 "resume": structured_resume,
@@ -108,7 +109,7 @@ if resume_data:
 
             # Set up prompt template for LLM
             # Set up prompt template for LLM with personalized context and experience calculation
-            #TODO -
+            # TODO -
             prompt_template = PromptTemplate(
                 input_variables=['resume', 'job_description'],
                 template="""
@@ -144,7 +145,7 @@ if resume_data:
                    is lacking certain skills or requirements provide where the user can learn those skills, and include
                    direct links to the suggestions, this can include programming language courses, certification websites,
                    coding bootcamps, and more.
-                   
+
                 Your response should have the following format with having a concise bulleted list.
                 1. Matched Skill set and Missing Skill set.
                 2. Total Experience

@@ -1,7 +1,7 @@
 import streamlit as st
 import json
 from tools.ResumeProcessor import process_resume, get_user_resume  # Resume processing
-from tools.JobPostProcessor import process_job_listing  # Job description processing
+#from tools.JobPostProcessor import process_job_listing  # Job description processing
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
