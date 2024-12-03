@@ -89,7 +89,6 @@ def save_resume_to_mongo(extracted_data):
     db = connect_to_mongo()
     collection = db['files_uploaded']
     username = st.session_state.get('username')
-    print(extracted_data)
     # Define the filter, update, and additional options
     filter_query = {'username': username}  # Filter by username
     update_fields = {'$set': {'resume_fields': extracted_data}}  # Update resume fields
@@ -109,12 +108,12 @@ def process_resume(resume, conversation_messages=None):
     conversation_messages.append(user_message)
 
     # Initialize the triaging process with the triaging prompt
-    messages = [{"role": "system", "content": triaging_system_prompt}]
+    messages = [{"role": "system", "content" : triaging_system_prompt}]
     messages.extend(conversation_messages)
 
     # Get response from the model, using triage tools for initial sorting
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-3.5-turbo",
         messages=messages,
         temperature=0,
         tools=triage_tools,
@@ -143,10 +142,9 @@ def extract_data(resume_data):
         "Format the extracted information as a JSON object."
         "Categorize the extracted information into lists. You can create custom categories based on the content of the resume. "
         "Please do not introduce new information or categories not found in the provided resume."
-        "Please do not relate or make inference upon the relationship of data unless it for the purpose to categorize them."
+        "Please do not relate or make inference upon the relationship of data unless it for the purpose to categorize them"
         "Please ensure that all relevant details are captured. Aim for comprehensive extraction and feel free to introduce new categories as needed."
-        "Any lists generated should be formatted as an array in JSON, within whatever array or category they would normally appear."
-        "Output the JSON object directly without using backticks or the 'json' label."
+        "Any lists generated should be formatted as an array in JSON, within whatever array or category they would normally appear"
         "Be sure to include as lists, but not limited to: skills, hard skills, soft skills, subcategories of skills based on field|area|topic|position|etc., education, Objective or Summary Statement, Contact Information, Work Experience,Certifications and Licenses,Projects,Volunteer Experience,Awards and Honors,Publications and Presentations,Professional Affiliations,Languages, Extra-Curricular,Additional Information, Personal Projects, References,Patents, Portfolio, Professional Development and Training "
         "Here's an example format, but feel free to add new fields if necessary:\n\n"
         "{{\n"
@@ -171,7 +169,7 @@ def extract_data(resume_data):
         "If any categories are not applicable, simply omit them."
     )
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "user", "content": prompt, "type": "json_object"}
         ]
@@ -229,7 +227,7 @@ def handle_data_extracting_agent(resume, conversation_messages):
 
     # Generate a response from the triaging system
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # or whatever model you're using
+        model="gpt-3.5-turbo",  # or whatever model you're using
         messages=messages,
         temperature=0,
         tools=extraction_tools  # Use the tools defined for triaging
