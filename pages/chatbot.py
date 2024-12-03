@@ -27,8 +27,11 @@ from tools.ResumeGenerator import create_enhanced_resume
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from tools.ResumeProcessor import process_resume
 import os
+
+#Import Resume Tools
+from tools.ResumeProcessor import get_user_resume
+from tools.ResumeProcessor import display_resume
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -73,16 +76,6 @@ def get_session_history(session_id:str) -> BaseChatMessageHistory:
         st.session_state[session_id] = ChatMessageHistory()
 
     return st.session_state[session_id]
-
-def get_user_resume(username):
-    uri = os.getenv('URI_FOR_Mongo')
-    client = MongoClient(uri, server_api=ServerApi('1'))
-    db = client['499']
-    collection = db['files_uploaded']
-    user = collection.find_one({'username': username})
-    if user and 'data' in user:
-        return user['data']
-    return None
 
 #######################################################################################################
 # USER INTERFACE
@@ -136,4 +129,4 @@ if st.session_state["chat_message_history"]:
         message(response, key=secrets.token_hex(8))
         if "Here's your resume" in response:
             if st.session_state["resume_requested"] and st.session_state["resume"]:
-                process_resume(st.session_state["resume"])
+                display_resume(st.session_state["resume"])

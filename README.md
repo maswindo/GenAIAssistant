@@ -11,17 +11,27 @@ We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot m
       `python -m venv venv`
        
       Create a Python virtual environment for Mac
-   
+
       `python3 -m venv venv`
+
+      #For Python installed by Homebrew(path may differ, brew info [python version] to find correct path, project built on python3.11)
+
+      /usr/local/bin/python3.11 -m venv venv
        
       Activating Virtual Environment in Python for Windows
    
       `venv\Scripts\activate`
        
       Activating Virtual environment in Python for Mac
+      #Deactivate base environment
+
+      'conda' deactivate
+
+      #Create Virtual Environment
    
       `source venv/bin/activate`
 
+     
 4. Once the virtual environment is activated please run this in the terminal command line of the project
 
    `pip install -r requirements.txt`

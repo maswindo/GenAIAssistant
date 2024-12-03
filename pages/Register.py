@@ -64,7 +64,7 @@ def connect_with_server(username, password, firstName, lastName, link):
             # Close the MongoDB connection and switch page
             client.close()
             st.success("Registration successful! Redirecting to chatbot page...")
-            st.experimental_rerun()
+            st.rerun()
 
 # Main form for registration
 st.title("Register")
