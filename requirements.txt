@@ -12,6 +12,7 @@ openai~=1.51.0
 pathlib==1.0.1
 pillow~=10.4.0
 pypdf~=4.0.2
+PyMuPDF==1.24.1
 PyPDF2~=3.0.1
 pymongo~=4.6.2
 pymupdf~=1.24.1
@@ -22,5 +23,3 @@ streamlit~=1.39.0
 streamlit_chat~=0.1.1
 tavily-python==0.3.1
 tornado~=6.4
-pdfplumber
-pytesseract~=0.3.10
