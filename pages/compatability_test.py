@@ -10,6 +10,8 @@ import pdfplumber
 import pytesseract
 import io
 
+from tools.ProxyCurlJob import scrape_job
+
 # Initialize OpenAI LLM for compatibility scoring
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.5, openai_api_key=os.getenv('OPENAI_API_KEY'))
 
@@ -89,7 +91,7 @@ if resume_data:
     if job_url and st.button("Analyze Compatibility"):
         structured_resume = process_resume(resume_data)
         # Fetch and process the job description
-        job_data = process_job_listing(job_url)  # Get structured data from JobPostProcessor
+        job_data = scrape_job(job_url)  # Get structured data from JobPostProcessor
 
         # Verify job description retrieval
         if not job_data:
@@ -142,6 +144,12 @@ if resume_data:
                    is lacking certain skills or requirements provide where the user can learn those skills, and include
                    direct links to the suggestions, this can include programming language courses, certification websites,
                    coding bootcamps, and more.
+                   
+                Your response should have the following format with having a concise bulleted list.
+                1. Matched Skill set and Missing Skill set.
+                2. Total Experience
+                3. Compatibility Score with point values
+                4. Provide resources to acquire lacking requirements and skills
                 """
             )
 
