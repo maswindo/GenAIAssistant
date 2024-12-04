@@ -10,6 +10,7 @@ from streamlit import session_state
 from openai import OpenAI
 from docx import Document
 from io import BytesIO
+import streamlit as st
 
 ###
 #This class processes the currently logged in user's resume, parses and uploads it in JSON format to mongodb
@@ -114,7 +115,9 @@ def extract_data(resume_data):
 
     return json_data
 
-def process_resume(resume_data,username):
+def process_resume(resume_data,username=None):
+        if username is None:
+            username = st.session_state['username']
         file_type = get_resume_type(username)
         type, subtype = file_type.split('/')
         resume = resume_to_text(resume_data,subtype)
