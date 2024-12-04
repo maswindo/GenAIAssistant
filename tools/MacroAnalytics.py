@@ -59,7 +59,7 @@ def convert_state_names_to_abbr(state_names):
     return [state_abbreviations.get(state, state) for state in state_names]
 
 # Find salary data for keyword(occupation) and location given
-def getLocalSalary(keyword, location):
+def get_local_salary(keyword, location):
     base_url = "https://api.careeronestop.org/v1/comparesalaries/{userId}/wage"
     enable_metadata = "false"
     url = base_url.format(userId=user_id)
@@ -183,10 +183,89 @@ def get_salary_map(wage_data):
 
 # Function to get job salaries by state
 @st.cache_data(ttl=3600)
-def getJobSalariesByState():
+def get_salaries_map():
     occupation = get_inferred_occupation()  # Get inferred occupation
     wage_data = []
     for state in us_states:
-        wage_data.append(getLocalSalary(occupation, state))  # Get wage data for each state
+        wage_data.append(get_local_salary(occupation, state))  # Get wage data for each state
     return get_salary_map(wage_data)  # Return the choropleth map
 
+# Choropleth map function, for parsing multiple occupations, returns a tuple
+@st.cache_data(ttl=3600)
+def get_salary_maps(wage_data):
+    # Initialize empty lists for the three figures
+    figs = []
+
+    # Loop through each occupation and create a figure
+    for occupation, data in wage_data.items():
+        median_salary = []
+        states = []
+
+        # Collect data for the specific occupation
+        for wage in data:
+            median_salary.append(float(wage['Median']))  # Ensure the median salary is a float
+            states.append(wage['AreaName'])
+
+        # Convert state names to abbreviations
+        states_abrv = convert_state_names_to_abbr(states)
+
+        # Create DataFrame with location and category for the current occupation
+        df = pd.DataFrame({
+            'State': states,
+            'Median Salary': median_salary
+        })
+
+        # Ensure that 'Median Salary' is a numeric column for proper gradient rendering
+        df['Median Salary'] = pd.to_numeric(df['Median Salary'], errors='coerce')
+
+        # Create choropleth map for the current occupation (fig1, fig2, or fig3)
+        fig = px.choropleth(
+            df,
+            locations=states_abrv,
+            locationmode='USA-states',
+            color='Median Salary',
+            hover_name="State",
+            hover_data={"State": False, "Median Salary": True},
+            scope="usa",
+            title=f"Salaries By State - {occupation}",
+            color_continuous_scale="RdYlGn",  # Green to Red color scale
+            range_color=[df['Median Salary'].min(), df['Median Salary'].max()]
+        )
+        fig.update_layout(
+            geo=dict(
+                center=dict(lat=37.0902, lon=-95.7129),  # Center of the USA (approx. lat/lon)
+                projection_type="albers usa",
+                projection_scale=1,
+                showcoastlines=True,
+                coastlinecolor="black",
+                showland=True,
+                landcolor="black"
+            ),
+            title={
+                'text': f"Salaries By State - {occupation}",
+                'x': 0.2,
+                'xanchor': 'center',
+                'y': 0.95,
+                'yanchor': 'top',
+                'font': {'size': 24, 'color': 'white'}
+            },
+            margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        )
+
+        # Append the generated figure to the list
+        figs.append(fig)
+
+    # Return the three figures as a tuple
+    return tuple(figs[:3])
+
+@st.cache_data(ttl=3600)
+def get_salaries_args(occupations):
+    wage_data = {}
+    for occupation in occupations:
+        occupation_wage_data = []
+        for state in us_states:
+            occupation_wage_data.append(get_local_salary(occupation, state))  # Get wage data for each state
+
+        wage_data[occupation] = occupation_wage_data
+
+    return get_salary_maps(wage_data)  # Return the choropleth map
