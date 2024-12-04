@@ -14,12 +14,4 @@ pillow~=10.4.0
 pypdf~=4.0.2
 PyMuPDF==1.24.1
 PyPDF2~=3.0.1
-pymongo~=4.6.2
-pymupdf~=1.24.1
-python-dotenv~=1.0.1
-requests~=2.31.0
-sortedcontainers==2.1.0
-streamlit~=1.39.0
-streamlit_chat~=0.1.1
-tavily-python==0.3.1
-tornado~=6.4
+

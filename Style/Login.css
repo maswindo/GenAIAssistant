@@ -1,0 +1,32 @@
+
+.login-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.login-container h2 {
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+}
+
+.login-subtitle {
+    color: #666;
+    font-size: 16px;
+}
+
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: #007bff;
+}
+
+.right-message{
+    margin-top: 50%;
+    margin-left: 20%;
+}
