@@ -10,7 +10,7 @@ if not OPENAI_API_KEY:
     st.error("Environment variables are missing. Please check the .env file.")
     st.stop()
 
-
+#TODO : AI must reference internally stored data containing list of occupation names to align with API occupation naming constraints
 
 def get_inferred_occupation():
     resume_data = get_user_resume(st.session_state.get('username'))
@@ -52,16 +52,20 @@ def get_inferred_occupations():
 
     prompt = (
         f"Analyze the following user resume:\n\n{resume_text}\n\n"
-        "From the provided resume data, determine the most appropriate occupation name that matches the user's skills, experience, and qualifications."
-        "The occupation title must align strictly with official SOC (Standard Occupational Classification), O*NET, or OES/OEWS (Occupational Employment Statistics/Occupational Employment and Wage Statistics) codes and titles."
-        "Provide a list of the top three occupations most related to the first occupation title, in order of relevance."
-        "Each occupation title must be a single occupation, in plural form, matching official classification titles."
+        "Determine the most appropriate occupation name based on the user's skills, experience, and qualifications."
+        "The occupation title must align with official SOC, O*NET, or OES/OEWS codes and titles."
+        "Provide the top three occupations related to the first occupation title, in order of relevance."
+        "Each occupation title must be a single, plural form occupation name matching official classification titles."
         "Return only the occupation titles as a list of strings, with no extra text, explanations, or formatting."
+        "The list should not be a dictionary, it must be a single-dimensional array."
+        "Use this example format: string1, string2, string3"
     )
 
     behaviour = (
-        "You are an occupation inference agent tasked with matching user resume data to SOC, O*NET, or OES/OEWS occupation codes and titles. "
-        "Your goal is to provide a precise and standardized occupation name based solely on the resume content."
+        "You are an occupation inference agent tasked with matching user resume data to SOC, O*NET, or OES/OEWS occupation codes and titles."
+        "Your goal is to provide three precise and standardized occupation names based solely on the resume content."
+        "You are not conversational."
+        "Your response should consist only of 3 occupation names in the form of strings like so: string1, string2, string3"
     )
 
     response = client.chat.completions.create(
@@ -74,9 +78,9 @@ def get_inferred_occupations():
 
     # Extract the assistant's reply
     occupations = response.choices[0].message.content.strip()
-
+    print(occupations)
     # If the response contains multiple occupations, split by line and clean up
-    occupations_list = [occupation.strip() for occupation in occupations.split("\n") if occupation.strip()]
+    occupations_list = [occupation.strip() for occupation in occupations.split(",") if occupation.strip()]
 
     # Ensure it's a list of exactly three occupations
     return occupations_list[:3]  # Return only the top 3 occupations
