@@ -10,18 +10,30 @@ if "first_name" in st.session_state:
 else:
     st.switch_page("Home.py")
 
-if st.button("Company/Company Job"):
-        st.switch_page("pages/Company.py")
 
 if st.button("Chatbot"):
-    st.switch_page("pages/Chatbot.py")
+    st.switch_page("pages/chatbot.py")
 
-if st.button("Resume Enchancement"):
-    st.switch_page("pages/EnchanceResume.py")
+if st.button("Advanced Enchancer"):
+    st.switch_page("pages/Advanced_Enhancer.py")
 
-if st.button("Job Compatibility"):
-    st.switch_page("pages/JobCompatibility.py")
+if st.button("Company"):
+        st.switch_page("pages/Company.py")
 
-if st.button("Personalized Recommendations"):
-    st.switch_page("pages/JobCompatibility.py")
+if st.button("Compatibility Test"):
+    st.switch_page("pages/compatability_test.py")
+
+if st.button("Compatibality"):
+    st.switch_page("pages/compatability.py")
+
+if st.button("Enchance_Resume"):
+    st.switch_page("pages/Enhance_Resume.py")
+
+if st.button("EnchanceResume"):
+    st.switch_page("pages/EnhanceResume.py")
+
+if st.button("Insights"):
+    st.switch_page("pages/Insights.py")
+
+
 
