@@ -28,7 +28,7 @@ if not uri:
     st.error("Environment variables are missing. Please check the .env file.")
     st.stop()
 # Front End
-st.title('Job Listings')
+st.title('Jobs')
 
 job_list = getJobList()
 if job_list:
