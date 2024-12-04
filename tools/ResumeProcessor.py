@@ -20,7 +20,7 @@ if not OPENAI_API_KEY:
     st.error("Environment variables are missing. Please check the .env file.")
     st.stop()
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai = OpenAI(api_key=OPENAI_API_KEY)
 
 
 def resume_to_text(uploaded_file, file_type):
@@ -45,8 +45,8 @@ def resume_to_text(uploaded_file, file_type):
 def connect_to_mongo():
     uri = os.environ.get('URI_FOR_Mongo')
     tlsCAFile = certifi.where()
-    client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
-    return client['499']
+    db = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
+    return db['499']
 
 def save_resume_to_mongo(extracted_data,username):
     db = connect_to_mongo()
@@ -54,13 +54,9 @@ def save_resume_to_mongo(extracted_data,username):
     # Define the filter, update, and additional options
     filter_query = {'username': username}  # Filter by username
     update_fields = {'$set': {'resume_fields': extracted_data}}  # Update resume fields
-    options = {
-        'upsert': True,  # Create a document if no match is found
-    }
 
     # Update the document in MongoDB
-    collection.update_one(filter_query, update_fields, **options)
-    client.close()
+    collection.update_one(filter_query, update_fields, upsert=True)
 
 def extract_data(resume_data):
     prompt = (
@@ -98,7 +94,7 @@ def extract_data(resume_data):
         "You are a resume extraction agent. Your job is to extract all the information from the resume. "
         "Do not introduce any new data or information that is not already provided in the resume."
     )
-    response = client.chat.completions.create(
+    response = openai.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "user", "content": prompt, "type": "json_object"},
@@ -126,6 +122,8 @@ def process_resume(resume_data,username):
         # Send extracted data to MongoDB
         save_resume_to_mongo(extracted_data,username)
 
+        return extracted_data
+
 def display_resume(uploaded_file):
     pdf_data = uploaded_file
     with fitz.open(stream=pdf_data, filetype="pdf") as doc:
@@ -135,15 +133,10 @@ def display_resume(uploaded_file):
 
     st.text_area("Resume Content", value=text)
 
-@st.cache_resource(ttl=3600)
-def connect_to_mongo():
-    uri = os.getenv('URI_FOR_Mongo')
-    return MongoClient(uri, server_api=ServerApi('1'))
 
 @st.cache_data(ttl=3600)
 def get_user_resume(username):
-    client = connect_to_mongo()
-    db = client['499']
+    db = connect_to_mongo()
     collection = db['files_uploaded']
     user = collection.find_one({'username': username})
     if user and 'data' in user:
@@ -151,10 +144,10 @@ def get_user_resume(username):
     return None
 
 def get_resume_type(username):
-    client = connect_to_mongo()
-    db = client['499']
+    db = connect_to_mongo()
     collection = db['files_uploaded']
     user = collection.find_one({'username': username})
     if user and 'file_type' in user:
         return user['file_type']
-    return None
+    else:
+        print("Error could not find resume file type")
