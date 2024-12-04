@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 import certifi
-from pycparser.ply.yacc import LRTable
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import requests
@@ -122,7 +121,7 @@ def get_occupation_skills():
 
 # Choropleth map function
 @st.cache_data(ttl=3600)
-def get_salary_map(wage_data):
+def get_salary_map(wage_data,occupation):
     median_salary = []
     states = []
 
@@ -152,7 +151,7 @@ def get_salary_map(wage_data):
         hover_name="State",
         hover_data={"State": False, "Median Salary": True},
         scope = "usa",
-        title="Salaries By State",
+        title=f"Salaries By State - {occupation}",
         color_continuous_scale="RdYlGn",  # Green to Red color scale
         range_color=[df['Median Salary'].min(),  df['Median Salary'].max()]
     )
@@ -167,7 +166,7 @@ def get_salary_map(wage_data):
             landcolor="black"
         ),
         title={
-            'text': "Salaries By State",
+            'text': f"Salaries By State - {occupation}",
             'x': 0.2,
             'xanchor': 'center',
             'y': 0.95,
@@ -177,18 +176,17 @@ def get_salary_map(wage_data):
                 'color': 'white'
             }
         },
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        margin={"r": 0, "t": 100, "l": 0, "b": 0},
     )
     return fig
 
 # Function to get job salaries by state
 @st.cache_data(ttl=3600)
-def get_salaries_map():
-    occupation = get_inferred_occupation()  # Get inferred occupation
+def get_salaries_map(occupation):
     wage_data = []
     for state in us_states:
         wage_data.append(get_local_salary(occupation, state))  # Get wage data for each state
-    return get_salary_map(wage_data)  # Return the choropleth map
+    return get_salary_map(wage_data,occupation)  # Return the choropleth map
 
 # Choropleth map function, for parsing multiple occupations, returns a tuple
 @st.cache_data(ttl=3600)
@@ -243,13 +241,13 @@ def get_salary_maps(wage_data):
             ),
             title={
                 'text': f"Salaries By State - {occupation}",
-                'x': 0.2,
+                'x': 0.5,
                 'xanchor': 'center',
-                'y': 0.95,
+                'y': 0.98,
                 'yanchor': 'top',
-                'font': {'size': 24, 'color': 'white'}
+                'font': {'size': 24, 'color': 'black'}
             },
-            margin={"r": 0, "t": 0, "l": 0, "b": 0},
+            margin={"r": 0, "t": 200, "l": 0, "b": 0},
         )
 
         # Append the generated figure to the list
