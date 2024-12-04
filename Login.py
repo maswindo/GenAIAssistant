@@ -4,17 +4,13 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import certifi
-from streamlit import session_state
-import atexit
-load_dotenv()
 
-def clear_cache_on_exit():
-    print("Clearing Cache...")
-    st.cache_data.clear()
+load_dotenv()
 
 def check_credentials(username_from_client, password_from_client):
     # MongoDB URI without the tlsCAFile option
     uri = os.environ.get('URI_FOR_Mongo')
+
 
     # Create MongoClient object with tlsCAFile option
     #tlsCAFile=os.environ.get('tlsCAFile')
@@ -35,7 +31,6 @@ def check_credentials(username_from_client, password_from_client):
     # Check if the result is not None (credentials exist)
     if result:
         st.session_state["username"] = username
-        st.session_state['logged_in'] = True
         st.session_state['link'] = result['link']
         st.success(f"Logged in as: {username}")
         st.switch_page("pages/chatbot.py")
@@ -45,25 +40,16 @@ def check_credentials(username_from_client, password_from_client):
     # Close the MongoDB connection
     client.close()
 
-def logout():
-    st.session_state.clear()
-    st.cache_data.clear()
-    st.rerun()
 
 st.title("Login")
-if 'logged_in' in st.session_state and st.session_state["logged_in"]:
-    st.write(f"Logged in as {st.session_state.get('username')}")
-    if st.button("Logout"):
-        logout()
-else:
-    with st.form("my_form", clear_on_submit=True):
-        st.text("Username:")
-        username = st.text_input("Enter Username")
-        st.text("Password:")
-        password = st.text_input("Enter Password", type="password")
-        login = st.form_submit_button("Log In")
-        if login:
-            check_credentials(username, password)
+st.sidebar.page_link("Login.py", label="Log In")
+st.sidebar.page_link("pages/Register.py", label="Register")
 
-atexit.register(clear_cache_on_exit)
-
+with st.form("my_form", clear_on_submit=True):
+    st.text("Username:")
+    username = st.text_input("Enter Username")
+    st.text("Password:")
+    password = st.text_input("Enter Password", type="password")
+    login = st.form_submit_button("Log In")
+    if login:
+        check_credentials(username, password)
