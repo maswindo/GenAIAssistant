@@ -35,5 +35,6 @@ if st.button("Enchance_Resume"):
 if st.button("Find a Job"):
     st.switch_page("pages/JobListings.py")
 
-
+if st.button("Trends"):
+    st.switch_page("pages/Trends.py")
 
