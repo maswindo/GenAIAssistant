@@ -11,7 +11,7 @@ langchain-core~=0.1.43
 langchain-openai~=0.1.3
 langchainhub~=0.1.15
 nltk~=3.9.1
-openai~=1.51.0
+openai~=1.56.1
 pathlib==1.0.1
 pdfplumber==0.5.28
 plotly>=5.2.0
