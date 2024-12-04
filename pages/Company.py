@@ -2,11 +2,17 @@ import streamlit as st
 from tools.Company.Company_Overview import generate_company_overview_data
 from tools.Company.Company_Linkedin import generate_company_linkedin_data
 from tools.Company.Glassdoor_Company_Reviews import generate_company_glassdoor_review_data
+from tools.Company.Glassdoor_Company_Reviews import generate_company_glassdoor_review_summary_data
+from tools.Company.Glassdoor_Company_Reviews import summarize_reviews
 from pymongo.mongo_client import MongoClient
 import os
 from dotenv import load_dotenv
 import certifi
 from pymongo.server_api import ServerApi
+from tools.Company.CompanyAssistant import generate_company_response  # Import the assistant logic
+import secrets
+from streamlit_chat import message
+
 
 
 # Load Font Awesome
@@ -59,7 +65,18 @@ def get_company_glassdoor_review_data(company_name: str):
 
     # Retrieve all documents in the collection
     company_data = list(collection.find()) 
+    return company_data
 
+def get_company_glassdoor_review_summary_data(company_name: str):
+
+    # Select the database and collection
+    database_name = "499"
+    collection_name = "Company_Reviews"
+    db = client[database_name]
+    collection = db[collection_name]
+    company_data = collection.find_one({"company_name": company_name})
+    print (company_data)
+    print ("I found!!")
     return company_data
 
 def format_company_type(company_type_raw):
@@ -89,8 +106,7 @@ def format_company_size(company_size):
     return "Size not available"
     
 
-# ----------------------------------------------------Streamlit User Interface--------------------------------------------------
-
+#----------------------------------------------------Streamlit User Interface--------------------------------------------------
 
 def load_company_data():
     company_name = st.session_state["company_name"]  # Access company_name from session state
@@ -118,6 +134,11 @@ def load_company_data():
                 company_glassdoor_review_data = generate_company_glassdoor_review_data(company_name, days)
             st.session_state["glassdoor_data"] = company_glassdoor_review_data
 
+        if st.session_state["glassdoor_summary_data"] is None:
+            company_glassdoor_review_summary_data = get_company_glassdoor_review_summary_data(company_name)
+            if not company_glassdoor_review_summary_data:
+                company_glassdoor_review_summary_data = generate_company_glassdoor_review_summary_data(st.session_state["glassdoor_data"],company_name)
+            st.session_state["glassdoor_summary_data"] = company_glassdoor_review_summary_data
     else:
         st.error("Please enter a valid company name.")
 
@@ -166,16 +187,11 @@ def display_company_data():
         # Display the company title
         st.title(company_data.get('company_name', company_name))
     
-    with col3:
-        st.text_input(
-            "", 
-            placeholder="Type Company Job"
-        )
+   
 
-    
+#--------------------------------------Company Overview--------------------------------------------------------
+
     col1, col2, col3 = st.columns(3)
-    
-
     
     with col1:
         st.markdown("#### Overview")
@@ -187,7 +203,6 @@ def display_company_data():
         st.write(f"#### Culture")
         st.write(company_data.get('culture', 'Culture information not available'))
         
-
     st.write(f"#### Company Values")            
     # Get the values from company data
     values = company_data.get('values', [])
@@ -201,11 +216,70 @@ def display_company_data():
     else:
         st.write("Values not available.")
 
+#-----------------------------------Chatbot----------------------------------------------------------
+
+    with st.expander("Chat with the Assistant", expanded=False):
+        st.write("Ask questions about the company, its culture, or get feedback on your resume for the company.")
+
+        chat_session_token = st.session_state["chat_session_token"]
+
+        # Clear Chat Button
+        if st.button("Clear Chat"):
+            st.session_state["user_prompt_history"] = []
+            st.session_state["chat_message_history"] = []
+
+        # Ensure required data is available in session state
+        company_overview = st.session_state["company_data"]
+        company_linkedin = st.session_state["linkedin_data"]
+        glassdoor_summary = st.session_state["glassdoor_summary_data"]
+        
+
+        # Input for user query
+        if prompt := st.chat_input("Enter your message"):
+            with st.spinner("Generating Response..."):
+                try:
+                    # Generate response using the assistant logic
+                    response = generate_company_response(
+                        prompt,
+                        chat_session_token,
+                        company_overview,
+                        company_linkedin,
+                        glassdoor_summary
+                    )
+                    # Append to session history
+                    st.session_state["user_prompt_history"].append(prompt)
+                    st.session_state["chat_message_history"].append(response)
+                except Exception as e:
+                    st.error(f"Error in generating response: {e}")
+
+        if st.session_state["user_prompt_history"] and st.session_state["chat_message_history"]:
+            for user_query, response in zip(st.session_state["user_prompt_history"], st.session_state["chat_message_history"]):
+                message(user_query, is_user=True, key=secrets.token_hex(8))
+                message(response, key=secrets.token_hex(8))
+        else:
+            st.write("No chat history available.")
+
+#-----------------------------------Glassdoor Reviews----------------------------------------------------------
+
     # Glassdoor Reviews Section
     st.write("#### Glassdoor Reviews")
 
     db = client["Company_Glassdoor_Reviews"]
     collection = db[company_name]
+
+    summary_data = st.session_state["glassdoor_summary_data"]
+
+    st.write("Pros Summary for last three months:")
+    st.write(summary_data["pro_short_summary"])
+    st.write("Cons Summary for last three months:")
+    st.write(summary_data["con_short_summary"])
+    st.write("Top 5 Trends for last three months:")
+    trends = summary_data["trends"] # Safely get the trends list
+    if trends:
+        for i, trend in enumerate(trends[:5], start=1):  # Limit to top 5 trends
+            st.write(trend)
+    else:
+        st.write("No trends available.")
 
     # Fetch distinct values for filters
     job_titles = collection.distinct("employee_job_title")
@@ -259,7 +333,15 @@ def display_company_data():
         # Display reviews only if they exist in session state
         if st.session_state["filtered_reviews"]:
             filtered_reviews = st.session_state["filtered_reviews"]
-
+            pros_summary = summarize_reviews(filtered_reviews["pros"], "pros")
+            cons_summary = summarize_reviews(filtered_reviews["cons"], "cons")
+                    # Display summaries
+            st.subheader("Summary of Reviews")
+            st.write("**Pros Summary:**")
+            st.write(pros_summary)
+            st.write("**Cons Summary:**")
+            st.write(cons_summary)
+        
             # Display Top Pro Reviews
             st.subheader("Top Pro Reviews")
             if filtered_reviews["pros"]:
@@ -276,6 +358,9 @@ def display_company_data():
                         st.write("---")
             else:
                 st.write("No Pro reviews found for the selected filters.")
+
+
+
 
             # Display Top Con Reviews
             st.subheader("Top Con Reviews")
@@ -295,6 +380,7 @@ def display_company_data():
             else:
                 st.write("No Con reviews found for the selected filters.")
 
+#---------------------------------Specialities------------------------------------------------------------------
     
     # Specialties Section
     st.write(f"#### Specialties") 
@@ -308,7 +394,8 @@ def display_company_data():
         st.write("No specialties available.")
 
 
-        
+#-----------------------------------Leadership-------------------------------------------------------------------
+
     st.write(f"#### Leadership") 
     leadership_info = company_data["leadership"]
     if leadership_info:
@@ -341,6 +428,7 @@ def display_company_data():
         st.write("Leadership information not available.")
 
 
+#-----------------------------------Affiliated Companies----------------------------------------------------------
 
     # Affiliated Companies
     st.write(f"#### Affiliated Companies")
@@ -354,6 +442,8 @@ def display_company_data():
                 st.write(industry)
     else:
         st.write("No affiliated companies available.")
+
+#-----------------------------------News and Updates----------------------------------------------------------
 
     # News and Updates Section
     st.write(f"#### News and Updates")
@@ -396,6 +486,20 @@ if "linkedin_data" not in st.session_state:
 if "glassdoor_data" not in st.session_state:
     st.session_state["glassdoor_data"] = None
 
+if "glassdoor_summary_data" not in st.session_state:
+    st.session_state["glassdoor_summary_data"] = None
+
+if "user_prompt_history" not in st.session_state:
+    st.session_state["user_prompt_history"] = []
+
+if "chat_message_history" not in st.session_state:
+    st.session_state["chat_message_history"] = []
+
+if "chat_session_token" not in st.session_state:
+    st.session_state["chat_session_token"] = secrets.token_hex(16)
+
+
+
 # Function to handle company name change
 def handle_company_name_change():
     current_name = st.session_state["current_company_name"]
@@ -412,6 +516,10 @@ def handle_company_name_change():
             "company_data": None,
             "linkedin_data": None,
             "glassdoor_data": None,
+            "glassdoor_summary_data": None,
+            "user_prompt_history": None,
+            "chat_message_history": None,
+            "chat_session_token": None
         })
         # Update the company name and load data
         st.session_state["company_name"] = current_name
