@@ -23,6 +23,8 @@ db_manager = DatabaseManager(
 resume_data = db_manager.get_resume(username)
 
 if resume_data:
+    if st.button("Go Home"):
+        st.switch_page("pages/WelcomePage.py")
     # Extract text from file
     resume_text = FileProcessor.extract_text(resume_data)
     st.text_area("Your Resume:", resume_text, height=200)
@@ -36,6 +38,11 @@ if resume_data:
         "Clarity": agent_manager.clarity_agent(resume_text),
         "Impact": agent_manager.impact_agent(resume_text),
         "Visual Scan": agent_manager.visual_scan_agent(resume_text),
+        "Branding": agent_manager.branding_agent(resume_text),  # Added Branding Agent
+        "ATS Compatibility": agent_manager.ats_compatibility_agent(resume_text),  # Added ATS Agent
+        "Quantification": agent_manager.quantification_agent(resume_text),  # Added Quantification Agent
+        "Action Verbs": agent_manager.action_verb_agent(resume_text),  # Added Action Verb Agent
+        "Achievements Highlight": agent_manager.achievements_highlight_agent(resume_text),  # Added Achievements Highlight Agent
     }
 
     # Display suggestions
@@ -48,7 +55,7 @@ if resume_data:
         )
 
     # Navigation to advanced enhancements
-    st.subheader("Need More Advanced Enhancements?")
+    st.subheader("Need More Advanced Enhancements or Want to Tailor your Resume?")
     if st.button("Go to Advanced Enhancements"):
         st.switch_page("pages/Advanced_Enhancer.py")
 else:
