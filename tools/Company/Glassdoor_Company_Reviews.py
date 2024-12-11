@@ -63,6 +63,7 @@ def get_company_glassdoor_review_data(glassdoor_url, days):
 
         print(f"Snapshot ID: {snapshot_id}")
         return snapshot_id
+    
     else:
         # Handle trigger failure
         raise Exception(f"Failed to trigger data collection. HTTP Status: {response.status_code}. Response: {response.text}")
@@ -114,7 +115,7 @@ def store_glassdoor_review_data(data, company_name):
 
 
 def get_glassdoor_review_url(company_name):
-    query_glassdoor = f"Glassdoor {company_name} company reviews"
+    query_glassdoor = f"Glassdoor {company_name} company reviews page"
 
     # Configure GoogleSearch parameters
     search_params = {
@@ -134,14 +135,34 @@ def get_glassdoor_review_url(company_name):
 
     return glassdoor_url
 
+def save_company_data(company_name, snapshot_id, file_path="tools/Company/Glassdoor_Company_Review.py"):
+    content = f'''# Glassdoor_Company_Review.py
+
+# Company name and snapshot ID
+COMPANY_NAME = "{company_name}"
+SNAPSHOT_ID = "{snapshot_id}"
+
+def get_company_details():
+    return {{
+        "company_name": COMPANY_NAME,
+        "snapshot_id": SNAPSHOT_ID
+    }}
+'''
+    with open(file_path, "w") as file:
+        file.write(content)
+    print(f"Data saved to {file_path}")
+
+
 def generate_company_glassdoor_review_data(company_name, days):
     glassdoor_url = get_glassdoor_review_url(company_name)
     print(glassdoor_url)
-    snapshot_id = generate_company_glassdoor_review_data(glassdoor_url, days)
-    data = download_snapshot(snapshot_id)
-    print(data)
-    store_glassdoor_review_data(data, company_name)
-    return data
+    snapshot_id = get_company_glassdoor_review_data(glassdoor_url, days)
+    save_company_data(company_name, snapshot_id)
+    # data = download_snapshot(snapshot_id)
+    # print(data)
+    # store_glassdoor_review_data(data, company_name)
+    # return data
+    return None
 
 
 def get_top_reviews_for_filtered_results(company_name, job_title=None, location=None, years=None, status=None, count=5):
@@ -189,7 +210,7 @@ def summarize_reviews(reviews, review_type):
 
     # Use the LLM to generate a summary
     prompt = (
-        f"Summarize the following {review_type} from employee reviews in 2-3 bullet points:\n\n{all_reviews}"
+        f"Summarize the following {review_type} from employee reviews. Keep it very consise, each bullet shouldn't have more than 15 words. Limit to 3 bullets. Make sure to be consise and include the specifics and only state the main points of the reviews:\n\n{all_reviews}"
     )
     response = llm.predict(prompt)
     return response.strip()
@@ -215,11 +236,6 @@ def store_glassdoor_summarized_review_data(data):
         print(f"Inserted 1 record into MongoDB with ID: {result.inserted_id}.")
     else:
         print("Data format is not supported for MongoDB storage.")
-
-    
-
-
-
 
 def generate_company_glassdoor_review_summary_data(reviews, company_name):
 

@@ -28,6 +28,7 @@ def fetch_company_data(linkedin_url):
     }
 
     response = requests.get(api_endpoint, params=params, headers=headers)
+    print(response.status_code)
 
     if response.status_code == 200:
         company_data = response.json()
@@ -75,7 +76,7 @@ def store_proxy_company(data):
     collection_name = "Company_Linkedin"
     db = client[database_name]
     collection = db[collection_name]
-    
+    print (data)
     # Insert data into MongoDB
     result = collection.insert_one(data)
     print("Data inserted with ID:", result.inserted_id)
