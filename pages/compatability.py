@@ -138,7 +138,8 @@ if resume_data:
                    the total relevant experience. Remember the current/present year is 2024.
                 4. Provide a compatibility score between 0 and 100 based on the alignment of skills, qualifications, 
                    and experience. Weigh experience at 20% (if they have the required amount of experience or more, give
-                   them the full points), qualifications at 20%, and listed skill set at 60%. Provide them the fraction
+                   them the full points, give partial credit to adjacent fields/domains as relevant experience), 
+                   qualifications at 20%, and listed skill set at 60%. Provide them the fraction
                    they earned from each category in your response (ex. Experience 15/20 Qualifications 15/20 Skills 60/60).
                    A score of 85 or above indicates a strong match.
                 5. Highlight any areas where the candidate may improve to better match the job requirements. If the user
