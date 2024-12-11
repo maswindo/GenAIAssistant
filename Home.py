@@ -1,5 +1,5 @@
 import streamlit as st
-
+import atexit
 
 # Set page config to have a title
 st.set_page_config(page_title="Home", layout="centered")
@@ -35,3 +35,8 @@ if st.button('Get Started'):
 if st.button('Login'):
     st.switch_page("pages/Login.py")
 
+def clear_cache_on_exit():
+    print("Clearing Cache...")
+    st.cache_data.clear()
+
+atexit.register(clear_cache_on_exit)

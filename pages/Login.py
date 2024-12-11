@@ -31,7 +31,8 @@ def check_credentials(username_from_client, password_from_client):
     if result:
         # Store the username and first name in session state
         st.session_state["username"] = result["username"]
-        st.session_state["first_name"] = result["firstName"]  
+        st.session_state["first_name"] = result["firstName"]
+        st.session_state['logged_in'] = True
         st.session_state['link'] = result.get('link', '')  
         st.success(f"Logged in as: {result['firstName']}")
         st.switch_page("pages/WelcomePage.py")

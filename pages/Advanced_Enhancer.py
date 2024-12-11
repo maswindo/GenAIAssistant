@@ -24,6 +24,8 @@ db_manager = DatabaseManager(
 resume_data = db_manager.get_resume(username)
 
 if resume_data:
+    if st.button("Go Home"):
+        st.switch_page("pages/WelcomePage.py")
     # Extract text from file
     resume_text = FileProcessor.extract_text(resume_data)
     st.text_area("Your Resume:", resume_text, height=200)
@@ -50,5 +52,53 @@ if resume_data:
             visual_feedback = agent_manager.advanced_visual_scan_agent(resume_text)
             st.markdown("### **Visual Scan Suggestions**")
             st.write(visual_feedback)
+
+    if st.button("Branding Enhancements"):
+        with st.expander("Branding Suggestions"):
+            branding_feedback = agent_manager.advanced_branding_agent(resume_text)
+            st.markdown("### **Branding Suggestions**")
+            st.write(branding_feedback)
+
+    if st.button("ATS Compatibility Enhancements"):
+        with st.expander("ATS Compatibility Suggestions"):
+            ats_feedback = agent_manager.advanced_ats_compatibility_agent(resume_text)
+            st.markdown("### **ATS Compatibility Suggestions**")
+            st.write(ats_feedback)
+
+    if st.button("Quantification Enhancements"):
+        with st.expander("Quantification Suggestions"):
+            quantification_feedback = agent_manager.advanced_quantification_agent(resume_text)
+            st.markdown("### **Quantification Suggestions**")
+            st.write(quantification_feedback)
+
+    if st.button("Action Verb Enhancements"):
+        with st.expander("Action Verb Suggestions"):
+            action_verb_feedback = agent_manager.advanced_action_verb_agent(resume_text)
+            st.markdown("### **Action Verb Suggestions**")
+            st.write(action_verb_feedback)
+
+    if st.button("Achievements Highlight Enhancements"):
+        with st.expander("Achievements Highlight Suggestions"):
+            achievements_feedback = agent_manager.advanced_achievements_highlight_agent(resume_text)
+            st.markdown("### **Achievements Highlight Suggestions**")
+            st.write(achievements_feedback)
+
+
+    # Tailoring Enhancements Section
+    st.subheader("Tailoring Enhancements")
+
+    # Text input field for the job description
+    job_description = st.text_area("Paste the Job Description:", placeholder="Enter the job description here...", height=150)
+
+    # Button to trigger the tailoring agent
+    if st.button("Run Tailoring Agent"):
+        if job_description.strip():  # Check if the user has entered a job description
+            with st.expander("Tailoring Suggestions"):
+                tailoring_feedback = agent_manager.tailoring_agent(resume_text, job_description)
+                st.markdown("### **Tailoring Suggestions**")
+                st.write(tailoring_feedback)
+        else:
+            st.error("Please provide a job description before running the Tailoring Agent.")
+
 else:
     st.warning("No resume found. Please upload one first.")

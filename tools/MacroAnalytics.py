@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 import certifi
-from pycparser.ply.yacc import LRTable
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import requests
@@ -10,11 +9,15 @@ import plotly.express as px
 from geopy.geocoders import GoogleV3
 import streamlit as st
 from tools.Infer_User_Preferences import get_inferred_occupation
+from openai import OpenAI
+
 # Load environment variables
 load_dotenv('../.env')
 user_id = os.getenv('CAREERONE_USER_ID')
 api_key = os.getenv('CAREERONE_API_KEY')
+openai_api_key = os.getenv('OPENAI_API_KEY')
 
+openai = OpenAI(api_key=openai_api_key)
 uri = os.environ.get('URI_FOR_Mongo')
 tlsCAFile = certifi.where()
 client = MongoClient(uri, tlsCAFile=tlsCAFile, server_api=ServerApi('1'))
@@ -122,7 +125,7 @@ def get_occupation_skills():
 
 # Choropleth map function
 @st.cache_data(ttl=3600)
-def get_salary_map(wage_data):
+def get_salary_map(wage_data,occupation):
     median_salary = []
     states = []
 
@@ -152,7 +155,7 @@ def get_salary_map(wage_data):
         hover_name="State",
         hover_data={"State": False, "Median Salary": True},
         scope = "usa",
-        title="Salaries By State",
+        title=f"Salaries By State - {occupation}",
         color_continuous_scale="RdYlGn",  # Green to Red color scale
         range_color=[df['Median Salary'].min(),  df['Median Salary'].max()]
     )
@@ -167,8 +170,8 @@ def get_salary_map(wage_data):
             landcolor="black"
         ),
         title={
-            'text': "Salaries By State",
-            'x': 0.2,
+            'text': f"Salaries By State - {occupation}",
+            'x': 0.4,
             'xanchor': 'center',
             'y': 0.95,
             'yanchor': 'top',
@@ -177,18 +180,17 @@ def get_salary_map(wage_data):
                 'color': 'white'
             }
         },
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        margin={"r": 0, "t": 100, "l": 0, "b": 0},
     )
     return fig
 
 # Function to get job salaries by state
 @st.cache_data(ttl=3600)
-def get_salaries_map():
-    occupation = get_inferred_occupation()  # Get inferred occupation
+def get_salaries_map(occupation):
     wage_data = []
     for state in us_states:
         wage_data.append(get_local_salary(occupation, state))  # Get wage data for each state
-    return get_salary_map(wage_data)  # Return the choropleth map
+    return get_salary_map(wage_data,occupation)  # Return the choropleth map
 
 # Choropleth map function, for parsing multiple occupations, returns a tuple
 @st.cache_data(ttl=3600)
@@ -243,13 +245,13 @@ def get_salary_maps(wage_data):
             ),
             title={
                 'text': f"Salaries By State - {occupation}",
-                'x': 0.2,
+                'x': 0.5,
                 'xanchor': 'center',
-                'y': 0.95,
+                'y': 0.98,
                 'yanchor': 'top',
-                'font': {'size': 24, 'color': 'white'}
+                'font': {'size': 24, 'color': 'black'}
             },
-            margin={"r": 0, "t": 0, "l": 0, "b": 0},
+            margin={"r": 0, "t": 200, "l": 0, "b": 0},
         )
 
         # Append the generated figure to the list
@@ -269,3 +271,34 @@ def get_salaries_args(occupations):
         wage_data[occupation] = occupation_wage_data
 
     return get_salary_maps(wage_data)  # Return the choropleth map
+
+@st.cache_data(ttl=3600)
+def get_occupation_statistics(occupation,location='New York'):
+    prompt = (
+        f"Please provide important statistics about the occupation of {occupation}. Present the information in a structured format, including the following sections:"
+        "Job Outlook: Projected growth rate over the next [X] years."
+        f"Average Salary: The median salary for the occupation in {location}."
+        f"Employment Numbers: Total number of people employed in this occupation in {location}."
+        "Educational Requirements: Typical level of education required for the occupation."
+        "Job Duties: Common responsibilities and tasks associated with the occupation."
+        "Work Environment: Typical work conditions, including hours, location, and work settings."
+        "Key Skills: Essential skills needed for the job."
+        f"Industry Demand: Industries in which the occupation is in high demand in {location}."
+        "Please provide relevant data, including citations from reputable sources where applicable."
+    )
+    behaviour = (
+        "You are an occupation data analyst tasked with outputting accurate data that is concise and easy to read while also being impactful to a person who's prospective occupation is given "
+        "Your goal is to provide precise information about the occupation and statistics regarding it in the current labor market locally, nationally, and globally."
+    )
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "user", "content": prompt},
+            {"role": "system", "content": behaviour}
+        ]
+    )
+
+    # Extract the assistant's reply
+    occupation_data = response.choices[0].message.content.strip()
+
+    return occupation_data

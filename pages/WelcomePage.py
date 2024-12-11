@@ -14,7 +14,7 @@ else:
 #if st.button("Chatbot"):
 #    st.switch_page("pages/chatbot.py")
 
-if st.button("Advanced Enchancer"):
+if st.button("Advanced Resume Enchancer"):
     st.switch_page("pages/Advanced_Enhancer.py")
 
 if st.button("Company"):
@@ -26,7 +26,7 @@ if st.button("Compatibility Test"):
 if st.button("Compatibility"):
     st.switch_page("pages/compatability.py")
 
-if st.button("Enchance_Resume"):
+if st.button("Enhance Resume"):
     st.switch_page("pages/Enhance_Resume.py")
 
 #if st.button("EnchanceResume"):
@@ -35,5 +35,8 @@ if st.button("Enchance_Resume"):
 if st.button("Find a Job"):
     st.switch_page("pages/JobListings.py")
 
+if st.button("Trends"):
+    st.switch_page("pages/Trends.py")
 
-
+if st.button("Developer Dashboard"):
+    st.switch_page("pages/DevDashboard.py")
