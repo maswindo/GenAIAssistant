@@ -9,18 +9,57 @@ We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot m
 3.  Create a .env file in the file directory with the repository that includes all your API keys.
 The .env should have the following API calls:
 
-OPENAI_API_KEY (https://platform.openai.com/)
+OPENAI_API_KEY ([https://platform.openai.com/](https://platform.openai.com/docs/quickstart))
+
+Sign Up/Login: Visit the OpenAI Platform and log in or create an account.
+
+Navigate to API Keys: Click on your profile icon at the top-right corner and select "View API Keys."
+
+Create a New Key: Click "Create new secret key" to generate a new API key.
+
+Save the Key: Copy and securely store the key, as it won't be displayed again.
 
 SERPAPI_API_KEY (https://serpapi.com/)
 
+Sign Up/Login: Go to the SerpAPI website and create an account or log in.
+
+Access API Key: Once logged in, your API key will be available in your account dashboard.
+
+Save the Key: Copy and securely store the key for your .env file.
+
 URI_FOR_Mongo (https://www.mongodb.com/cloud/atlas)
+
+Sign Up/Login: Visit MongoDB Atlas and log in or create an account.
+
+Create a Cluster: Follow the prompts to set up a new database cluster.
+
+Obtain Connection String: After setting up, click "Connect" and choose "Connect your application" to get the connection URI.
+
+Configure URI: Replace placeholders (e.g., <password>, <dbname>) with your database credentials.
 
 TAVILY_API_KEY (https://tavily.com/)
 
+Sign Up/Login: Visit the Tavily website and create an account or log in.
+
+Access API Key: After logging in, navigate to the API section in your account to find your key.
+
+Save the Key: Copy and securely store the key for your .env file.
+
 PROXYCURL_API_KEY (https://nubela.co/proxycurl/)
+
+Sign Up/Login: Go to the Proxycurl website and create an account or log in.
+
+Access API Key: Once logged in, your API key will be displayed in your account dashboard.
+
+Save the Key: Copy and securely store the key for your .env file.
 
 BRIGHTDATA_API_KEY (https://brightdata.com/)
 
+Sign Up/Login: Visit the Bright Data website and create an account or log in.
+
+Access API Key: After logging in, navigate to the API section to find your key.
+
+Save the Key: Copy and securely store the key for your .env file.
 
 4. Create a python virtual environment in your system's terminal:
    
