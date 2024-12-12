@@ -83,6 +83,8 @@ if resume_data:
     resume_text = process_resume_data(resume_data)
 
     # Display the user's resume data in text format
+    if st.button("Go Home"):
+        st.switch_page("pages/WelcomePage.py")
     st.subheader("Processed Resume Data:")
     st.text_area("Resume Content", resume_text, height=400)
 

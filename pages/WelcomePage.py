@@ -14,14 +14,14 @@ else:
 #if st.button("Chatbot"):
 #    st.switch_page("pages/chatbot.py")
 
-if st.button("Advanced Resume Enchancer"):
+if st.button("Advanced Resume Enhancer"):
     st.switch_page("pages/Advanced_Enhancer.py")
 
 if st.button("Company"):
         st.switch_page("pages/Company.py")
 
-if st.button("Compatibility Test"):
-    st.switch_page("pages/compatability_test.py")
+#if st.button("Compatibility Test"):
+#    st.switch_page("pages/compatability_test.py")
 
 if st.button("Compatibility"):
     st.switch_page("pages/compatability.py")
