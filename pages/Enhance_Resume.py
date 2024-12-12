@@ -30,7 +30,7 @@ if resume_data:
     st.text_area("Your Resume:", resume_text, height=200)
 
     st.subheader("Concise Suggestions")
-    chat = ChatOpenAI(model="gpt-4-turbo", temperature=0)
+    chat = ChatOpenAI(model="gpt-4o-mini", temperature=0)
     agent_manager = AgentManager(chat)
 
     # Generate concise suggestions
