@@ -89,7 +89,7 @@ Save the Key: Copy and securely store the key for your .env file.
    
 8.  Run the application by using the command below to start the project in your terminal:
 
-      `streamlit run Login.py`
+      `streamlit run Home.py`
 
 That should take you to this page where you can interact with our application.
 <img width="1123" alt="image" src="https://github.com/Teccon1998/GenAIAssistant/assets/43446163/07388579-22e6-4c7c-b2d5-f016de5e4d4d">
