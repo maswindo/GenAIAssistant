@@ -7,7 +7,7 @@ We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot m
 2.  Clone the repository using git clone
    
 3.  Create a .env file in the file directory with the repository that includes all your API keys.
-The .env should have the following API calls:
+The .env should have the following API keys:
 
 OPENAI_API_KEY ([https://platform.openai.com/](https://platform.openai.com/docs/quickstart))
 
