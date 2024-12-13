@@ -1,7 +1,3 @@
-BEMA - The Interactive AI Model
-
-We created BEMA using LLM, Langchain, and OpenAI. It is an interactive chatbot much like ChatGPT. It can also be used for the specific case of writing a resume based on a job link that the user provides. 
-
 1. Install Python onto your system (3.12.6 reccommended and tested for).
 
 2.  Clone the repository using git clone
