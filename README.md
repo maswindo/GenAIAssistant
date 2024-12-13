@@ -197,3 +197,27 @@ exports = async function(changeEvent) {
 Notes:
 within collections files_uploaded there is a field called resume_fields. This is parsed by the AI and may be temperemental. The error checking for functions using this could be improved.
 Similarly, within Jobs is the job_details field and also temperemental to the way AI will parse data. If any issues occur for either, adjusting the associated prompt within their respective files to be more accurate will fix. However, cases of completely missing data from the original resume or job listing will require more thorough error checking.
+
+Screenshots of application:
+Welcome Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Welcome.jpg">
+Login Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Login.jpg">
+Register Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Register.jpg">
+Advanced Enhancements Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Advanced_Enhancer.jpg">
+Simple Enhancements Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Enhance_Resume.jpg">
+Company Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Company.jpg">
+Compatibility Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/compatability.jpg">
+Paths Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Paths.jpg">
+Job Listings Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/JobListings.jpg">
+Developer Dashboard Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/DevDashboard.jpg">
+Trends Page
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Trends.jpg">
