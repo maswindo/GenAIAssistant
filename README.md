@@ -88,7 +88,7 @@ Fill out data request form to retrieve api key and user id. Completely free.
       `streamlit run Home.py`
 
 That should take you to this page where you can interact with our application.
-<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Home.pdf">
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Home.jpg">
 
 
 
