@@ -16,5 +16,7 @@ if 'logged_in' in st.session_state and st.session_state["logged_in"]:
     #st.write(occupations[2])
     #st.plotly_chart(figs[2])
     st.write(get_occupation_statistics(inferred_occupation))
+    if st.button("Go to Paths"):
+        st.switch_page("pages/Paths.py")
 else:
     st.write("You must be logged in to view trends.")

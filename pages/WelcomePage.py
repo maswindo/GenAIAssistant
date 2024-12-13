@@ -38,5 +38,8 @@ if st.button("Find a Job"):
 if st.button("Trends"):
     st.switch_page("pages/Trends.py")
 
+if st.button("Paths"):
+    st.switch_page("pages/Paths.py")
+
 if st.button("Developer Dashboard"):
     st.switch_page("pages/DevDashboard.py")
