@@ -3,10 +3,7 @@
 2.  Clone the repository using git clone
    
 3.  Create a .env file in the file directory with the repository that includes all your API keys.
-The .env should have the following API keys:
-
-OPENAI_API_KEY ([https://platform.openai.com/](https://platform.openai.com/docs/quickstart))
-
+For All:
 Sign Up/Login: Visit the OpenAI Platform and log in or create an account.
 
 Navigate to API Keys: Click on your profile icon at the top-right corner and select "View API Keys."
@@ -14,14 +11,15 @@ Navigate to API Keys: Click on your profile icon at the top-right corner and sel
 Create a New Key: Click "Create new secret key" to generate a new API key.
 
 Save the Key: Copy and securely store the key, as it won't be displayed again.
+The .env should have the following API keys:
+
+OPENAI_API_KEY ([https://platform.openai.com/](https://platform.openai.com/docs/quickstart))
+
+Free tier available, however to process sufficient amount of tokens free tier is insufficient. Requires upgrade to at least 1st tier.
 
 SERPAPI_API_KEY (https://serpapi.com/)
 
-Sign Up/Login: Go to the SerpAPI website and create an account or log in.
-
-Access API Key: Once logged in, your API key will be available in your account dashboard.
-
-Save the Key: Copy and securely store the key for your .env file.
+Free tier available, 100 searches per month
 
 URI_FOR_Mongo (https://www.mongodb.com/cloud/atlas)
 
@@ -35,27 +33,15 @@ Configure URI: Replace placeholders (e.g., <password>, <dbname>) with your datab
 
 TAVILY_API_KEY (https://tavily.com/)
 
-Sign Up/Login: Visit the Tavily website and create an account or log in.
-
-Access API Key: After logging in, navigate to the API section in your account to find your key.
-
-Save the Key: Copy and securely store the key for your .env file.
+Free tier allows 1000 credits
 
 PROXYCURL_API_KEY (https://nubela.co/proxycurl/)
 
-Sign Up/Login: Go to the Proxycurl website and create an account or log in.
-
-Access API Key: Once logged in, your API key will be displayed in your account dashboard.
-
-Save the Key: Copy and securely store the key for your .env file.
+Small free trial avaiable. Can purchase credits starting at $10
 
 BRIGHTDATA_API_KEY (https://brightdata.com/)
 
-Sign Up/Login: Visit the Bright Data website and create an account or log in.
-
-Access API Key: After logging in, navigate to the API section to find your key.
-
-Save the Key: Copy and securely store the key for your .env file.
+Small free trial avaiable. Can purchase credits starting at $10
 
 GOOGLE_API_KEY (https://developers.google.com/maps/documentation/geocoding/start)
 
@@ -64,7 +50,6 @@ Activate the geocoding API and use that key after following all of the steps pro
 CAREERONE_API_KEY and CAREERONE_USER_ID (https://www.careeronestop.org/Developers/WebAPI/web-api.aspx)
 
 Fill out data request form to retrieve api key and user id. Completely free.
-
 
 
 4. Create a python virtual environment in your system's terminal:
@@ -76,10 +61,12 @@ Fill out data request form to retrieve api key and user id. Completely free.
       Create a Python virtual environment for Mac
 
       (example uses python3.11, likely will need homebrew so as not to use Mac's default python 3.9.7, preferable for flexibility without having to manually change python version in PATH)
-   
-      `/usr/local/bin/python3.11 -m venv venv`
 
-      
+      `/usr/local/bin/python3.11 -m venv venv`
+         alternatively, to find that exact path of your python version:
+   import certifi
+   print(certifi.where())
+
       Activating Virtual Environment in Python for Windows
    
       `venv\Scripts\activate`
@@ -140,6 +127,10 @@ MongoDB: Handles secure storage and management of user data.
 ProxyCurl API: Enables web scraping for LinkedIn data.
 
 Tavily Search Engine: AI focused contextual web data retrieval.
+
+Google API: For geocoding coordinates for mapping data
+
+CareerOne API: For retrieving data related to occupations
 
 **MongoDB Set Up:**
 
