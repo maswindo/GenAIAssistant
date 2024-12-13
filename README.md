@@ -64,8 +64,8 @@ Fill out data request form to retrieve api key and user id. Completely free.
 
       `/usr/local/bin/python3.11 -m venv venv`
          alternatively, to find that exact path of your python version:
-   import certifi
-   print(certifi.where())
+         import certifi
+         print(certifi.where())
 
       Activating Virtual Environment in Python for Windows
    
@@ -88,7 +88,7 @@ Fill out data request form to retrieve api key and user id. Completely free.
       `streamlit run Home.py`
 
 That should take you to this page where you can interact with our application.
-<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/assets/43446163/07388579-22e6-4c7c-b2d5-f016de5e4d4d">
+<img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/assets/Home.pdf">
 
 
 
