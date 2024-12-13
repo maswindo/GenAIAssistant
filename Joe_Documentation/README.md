@@ -8,8 +8,9 @@
  - MacroAnalytics (Planned)
  - Merged most of Shreya's Branch
  - Insights Page
+ - Paths 
 .
-## Resume Parser - ResumeProcessor.py
+## Resume Parser - tools/ResumeProcessor.py
 **APIs Added**
 None
 **Libraries Added:**
@@ -26,7 +27,7 @@ Will modify to process all users stored in database automatically in backend
 **Notes**
 None
 
-## Job Listing Parser - JobPostProcessor.py
+## Job Listing Parser - tools/JobPostProcessor.py
 **APIs Added**
 None
 **Libraries Added:**
@@ -45,7 +46,7 @@ Job Listing sourcing is not finalized.
 Need to find an API that is available and scalable. 
 Datasets may be used temporarily but are not convenient for a dynamic system.
 
-## Job Listing and Application Page - JobListing.py
+## Job Listing and Application Page - pages/JobListing.py
 **APIs Added**
 None
 **Libraries Added:**
@@ -62,7 +63,7 @@ Job listings should have a success/compatibility score. Clicking apply should le
 Currently used for testing job listing applicant statistical analyses
 
 
-## Internal Analytics - InternalAnalytics.py
+## Internal Analytics - tools/InternalAnalytics.py
 **APIs Added**
 Mapbox (Requires Key, Freemium - Likely will not reach paid threshold for testing)
 *For Map Graphics*
@@ -88,7 +89,7 @@ Must establish more analytics that can be easily derived to allow the multi-agen
 Every analytics process avaiable is essentially a tool that the multi-agent system can utilize in its calculations. The more data we can derive from the less likeliness of hallucinations, bad math, and weak confidence in analyses.
 Should prioritize univariate analytics
 
-## DevDashboard - DevDasboard.py
+## DevDashboard - pages/DevDasboard.py
 **APIs Added**
 None
 **Libraries Added:**
@@ -104,11 +105,11 @@ Will merge internal analytics into this page
 **Notes**
 None
 
-## MacroAnalytics (WIP) - MacroAnalytics.py
+## tools/MacroAnalytics (WIP) - MacroAnalytics.py
 **APIs Added**
-None
+CareerOne,Google
 **Libraries Added:**
-None
+Plotly,Pandas,Geopy,GoogleV3
 **Location of Trigger**
 MacroAnalytics
 **Use Case**
@@ -116,11 +117,11 @@ Perform statistical analysis or provide the tools for AI to do so to derive mean
 **Design**
 A mix of hard coded analytic algorithms to derive insights, data sourcing from API's, and tools for AI to derive statistical analyses of its own.
 **Plans**
-Will create
+Could provide more detailed information, requires more connections to good data sources/APIs
 **Notes**
-Currently only planning and hypothesis
+None
 
-## Insights - Insights.py
+## Insights - pages/Insights.py
 **APIs Added**
 None
 **Libraries Added:**
@@ -140,8 +141,70 @@ Will create
 **Notes**
 Currently only planning and hypothesis
 
-## Shreya Merge
-Configured ProxyCurlLinkedIn, the tool to gather Linked In data from companies, to gather data from all companies currently stored in job listing database. It should work, however the requirement to purchase credits from ProxyCurl has limited it to being functionally untested.
+## Trends - pages/Trends.py
+**APIs Added**
+None
+**Libraries Added:**
+None
+**Location of Trigger**
+Trends page
+**Use Case**
+Display trends relevent to user about related occupation and important information contextually about it to provide user with an understanding the career
+**Design**
+Calls for inferred user optimal occupation based on user data and provides statistics and maps using several libraries
+**Plans**
+Would be useful to have the option to select from multiple different optimal occupations to view data
+**Notes**
+None
+
+## pages/Paths.py and tools/Pathing.py
+**APIs Added**
+None
+**Libraries Added:**
+None
+**Location of Trigger**
+Paths page
+**Use Case**
+Display optimal career paths based on user data and suggests relevant jobs in database
+**Design**
+Simple prompt with necessary active user data and current database
+**Plans**
+Front-End should display info in a more intuitive way. Mapping career prospects should read left to right in some sort of graphic display that draws attention to information in an intuitive way.
+**Notes**
+None
+
+## tools/Infer_User_Preferences.py
+**APIs Added**
+None
+**Libraries Added:**
+None
+**Location of Trigger**
+Trends Page
+**Use Case**
+Infer data/conclusions about the user based on user data
+**Design**
+Simple prompt with necessary active user data and current database
+**Plans**
+Could be expanded to infer many other things. Should be developed to become its own multi-agent node
+**Notes**
+None
+
+## tools/Embeddings.py
+**APIs Added**
+None
+**Libraries Added:**
+None
+**Location of Trigger**
+Trends(planned)
+**Use Case**
+Incorporate internal static data that the AI must use for recall to perform accurate function calling
+**Design**
+Generic OpenAI embeddings procedure
+**Plans**
+Needs to be developed
+**Notes**
+Example: CareerOne requires specific titles for functions to retrieve data correctly, therefore a static list of data provided by them needs to be recalled by the AI for no-fault use.
+Should contain all initializations required for teh internal database to be connected to the AI model.
 
 ## Bug Fixes and Modifications
 
