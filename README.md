@@ -74,14 +74,12 @@ Fill out data request form to retrieve api key and user id. Completely free.
       `python -m venv venv`
        
       Create a Python virtual environment for Mac
-      Method 1 (if your default python version is already =>3.11)
-   
-      `python3 -m venv venv`
 
-      Method 2 (example installs v 3.11, likely will need homebrew so as not to use Mac's default python 3.9.7, preferable for flexibility without having to manually change python version in PATH)
+      (example uses python3.11, likely will need homebrew so as not to use Mac's default python 3.9.7, preferable for flexibility without having to manually change python version in PATH)
    
       `/usr/local/bin/python3.11 -m venv venv`
-       
+
+      
       Activating Virtual Environment in Python for Windows
    
       `venv\Scripts\activate`
