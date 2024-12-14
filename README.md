@@ -1,4 +1,4 @@
-# Instalation 
+# Installation 
 
 1. Install Python onto your system (3.12.6 reccommended and tested for).
 
@@ -76,10 +76,13 @@ Configure URI: Replace placeholders (e.g., <password>, <dbname>) with your datab
 To obtain tlsCAFile path:
 
 - Run the following code 
-'''
+
+```
 import certifi
 print(certifi.where())
-'''
+
+```
+
 - Copy and paste this path into .env file under tlsCAFile
 
 **BRIGHTDATA_API_KEY:** [https://brightdata.com/](https://brightdata.com/)
