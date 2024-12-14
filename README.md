@@ -272,3 +272,172 @@ Developer Dashboard Page
 
 Trends Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Trends.jpg">
+
+
+
+
+
+
+
+## References
+
+1. OpenAI Platform: [https://platform.openai.com/](https://platform.openai.com/)
+2. MongoDB Atlas Documentation: [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+3. Streamlit Documentation: [https://docs.streamlit.io/](https://docs.streamlit.io/)
+4. LangChain Framework: [https://python.langchain.com/en/latest/](https://python.langchain.com/en/latest/)
+5. SerpAPI Documentation: [https://serpapi.com/](https://serpapi.com/)
+6. Tavily Search Engine API: [https://tavily.com/](https://tavily.com/)
+7. ProxyCurl API for LinkedIn Data: [https://nubela.co/proxycurl/](https://nubela.co/proxycurl/)
+8. Google Maps Geocoding API: [https://developers.google.com/maps/documentation/geocoding/start](https://developers.google.com/maps/documentation/geocoding/start)
+9. CareerOneStop Web API: [https://www.careeronestop.org](https://www.careeronestop.org)
+10. BrightData Web Scraper API: [https://brightdata.com/](https://brightdata.com/)
+11. Python Virtual Environment: [https://docs.python.org/3/library/venv.html](https://docs.python.org/3/library/venv.html)
+12. MIT Sloan Report on AI-Boosted Resumes: [https://mitsloan.mit.edu/ideas-made-to-matter/job-seekers-ai-boosted-resumes-more-likely-to-be-hired](https://mitsloan.mit.edu/ideas-made-to-matter/job-seekers-ai-boosted-resumes-more-likely-to-be-hired)
+13. McKinsey Report on AI Adoption: [https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai)
+14. InsightGlobal Job Burnout Survey: [https://insightglobal.com/news/unemployment-job-hunt-burnout-survey/](https://insightglobal.com/news/unemployment-job-hunt-burnout-survey/)
+15. OpenAI API Best Practices: [https://openai.com/blog/chatgpt-api-best-practices](https://openai.com/blog/chatgpt-api-best-practices)
+
+
+
+
+
+
+
+## Frequently Asked Questions (FAQ)
+
+### 1. How do I get the required API keys?
+Refer to the **API Key Setup** section for step-by-step instructions on obtaining keys for OpenAI, MongoDB Atlas, SerpAPI, Tavily, ProxyCurl, and others.
+
+---
+
+### 2. I’m receiving API key errors. What should I do?
+- Ensure that all API keys are correctly added to the `.env` file.
+- Check for typos and ensure there are no spaces around the keys.
+- Verify that the APIs are active and the quotas have not been exceeded.
+
+---
+
+### 3. The MongoDB database connection is failing. How can I resolve it?
+- Double-check the **URI_FOR_Mongo** string in the `.env` file.
+- Ensure that your IP address is whitelisted in the MongoDB Atlas settings.
+- Verify that the database user credentials are correct.
+
+---
+
+### 4. What should I do if the Streamlit app won’t start?
+- Ensure the virtual environment is activated before running the app:
+  ```bash
+  source venv/bin/activate  # Mac/Linux
+  venv\Scripts\activate     # Windows
+  ```
+Run the following commands:
+   ```bash
+   pip install -r requirements.txt
+   streamlit run Home.py
+```
+### 5. Where is user data stored?
+- User data, resumes, and job-related information are securely stored in MongoDB Atlas collections. The main collections include:
+   - **`files_uploaded`**: Stores resumes and uploaded files.
+   - **`jobs`**: Contains job-related data retrieved via APIs.
+   - **`insights`**: Stores analyzed trends and recommendations.
+
+---
+
+### 6. How can I update job listings data?
+- Job data can be updated by running the functions in the **`JobPostProcessor.py`** script.
+- Use the appropriate triggers for these functions in the **DevDashboard** page or as defined by the project structure.
+
+
+## Potential Issues and Solutions
+
+### 1. **API Rate Limits or Expired Keys**
+- **Issue**: The application may fail to fetch data if API rate limits are exceeded or keys have expired.
+- **Solution**:
+  - Monitor API quotas via the respective dashboards.
+  - Replace expired API keys in the `.env` file with new ones.
+  - Optimize API calls to avoid hitting rate limits.
+
+---
+
+### 2. **Incomplete Data in Resumes or Job Listings**
+- **Issue**: Missing fields like `resume_fields` or `job_details` can cause errors in data parsing.
+- **Solution**:
+  - Adjust the prompts in the respective files to improve parsing accuracy.
+  - Add error-handling logic to skip or manage missing fields gracefully.
+
+---
+
+### 3. **MongoDB Database Connection Failure**
+- **Issue**: The system fails to connect to the MongoDB database due to incorrect credentials or network issues.
+- **Solution**:
+  - Verify that the `URI_FOR_Mongo` string in the `.env` file is correct.
+  - Ensure your IP address is whitelisted in the MongoDB Atlas settings.
+  - Confirm that database user permissions are correctly configured.
+
+---
+
+### 4. **Application Performance Delays**
+- **Issue**: API response times may cause delays, especially when processing a large number of requests.
+- **Solution**:
+  - Optimize API calls to minimize redundant requests.
+  - Use batch processing for bulk data requests.
+  - Reduce concurrent requests to external APIs where possible.
+
+---
+
+### 5. **Virtual Environment Not Activating**
+- **Issue**: The virtual environment may fail to activate, preventing the application from running.
+- **Solution**:
+  - Recreate the virtual environment using the following command:
+    ```bash
+    python -m venv venv
+    ```
+  - Activate the virtual environment:
+    - **Windows**:
+      ```bash
+      venv\Scripts\activate
+      ```
+    - **Mac/Linux**:
+      ```bash
+      source venv/bin/activate
+      ```
+
+---
+
+### 6. **Streamlit App Crashes**
+- **Issue**: The Streamlit app may crash due to missing dependencies or caching issues.
+- **Solution**:
+  - Reinstall required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+  - Clear Streamlit’s cache to resolve inconsistencies:
+    ```bash
+    streamlit cache clear
+    ```
+  - Verify installed libraries and their versions:
+    ```bash
+    pip freeze
+    ```
+  - Restart the virtual environment and rerun the app:
+    ```bash
+    streamlit run Home.py
+    ```
+
+---
+
+### 7. **Data Not Appearing in UI**
+- **Issue**: Resume fields, job listings, or insights data fail to appear in the Streamlit app.
+- **Solution**:
+  - Ensure the MongoDB database is connected and populated with data.
+  - Verify that API responses return the expected data format.
+  - Debug the pipeline scripts (e.g., `JobPostProcessor.py`) for errors.
+
+---
+
+### 8. **API Key Exposure**
+- **Issue**: Exposing sensitive API keys in the source code poses a security risk.
+- **Solution**:
+  - Store API keys securely in a `.env` file and use environment variable libraries like `python-dotenv`.
+  - Avoid hardcoding API keys into scripts or publicly accessible files.
+
