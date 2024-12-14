@@ -1,58 +1,10 @@
+# Instalation 
+
 1. Install Python onto your system (3.12.6 reccommended and tested for).
 
 2.  Clone the repository using git clone
-   
-3.  Create a .env file in the file directory with the repository that includes all your API keys.
-For All:
-Sign Up/Login: Visit the OpenAI Platform and log in or create an account.
 
-Navigate to API Keys: Click on your profile icon at the top-right corner and select "View API Keys."
-
-Create a New Key: Click "Create new secret key" to generate a new API key.
-
-Save the Key: Copy and securely store the key, as it won't be displayed again.
-The .env should have the following API keys:
-
-OPENAI_API_KEY ([https://platform.openai.com/](https://platform.openai.com/docs/quickstart))
-
-Free tier available, however to process sufficient amount of tokens free tier is insufficient. Requires upgrade to at least 1st tier.
-
-SERPAPI_API_KEY (https://serpapi.com/)
-
-Free tier available, 100 searches per month
-
-URI_FOR_Mongo (https://www.mongodb.com/cloud/atlas)
-
-Sign Up/Login: Visit MongoDB Atlas and log in or create an account.
-
-Create a Cluster: Follow the prompts to set up a new database cluster.
-
-Obtain Connection String: After setting up, click "Connect" and choose "Connect your application" to get the connection URI.
-
-Configure URI: Replace placeholders (e.g., <password>, <dbname>) with your database credentials.
-
-TAVILY_API_KEY (https://tavily.com/)
-
-Free tier allows 1000 credits
-
-PROXYCURL_API_KEY (https://nubela.co/proxycurl/)
-
-Small free trial avaiable. Can purchase credits starting at $10
-
-BRIGHTDATA_API_KEY (https://brightdata.com/)
-
-Small free trial avaiable. Can purchase credits starting at $10
-
-GOOGLE_API_KEY (https://developers.google.com/maps/documentation/geocoding/start)
-
-Activate the geocoding API and use that key after following all of the steps provided by google to make an account, billing, etc. It provides a generous free tier unlikely to reach a quota through development.
-
-CAREERONE_API_KEY and CAREERONE_USER_ID (https://www.careeronestop.org/Developers/WebAPI/web-api.aspx)
-
-Fill out data request form to retrieve api key and user id. Completely free.
-
-
-4. Create a python virtual environment in your system's terminal:
+3. Create a python virtual environment in your system's terminal:
    
       Create a Python virtual environment for Windows
    
@@ -75,15 +27,88 @@ Fill out data request form to retrieve api key and user id. Completely free.
    
       `source venv/bin/activate`
 
-6. Once the virtual environment is activated go to the directory folder of the repository on your system. (if not already there)
+4. Once the virtual environment is activated go to the directory folder of the repository on your system. (if not already there)
 
-      `cd YOURFILEPATH` for Windows
+      `cd YOURFILEPATH` 
       
-7. Afterwards, use pip to install all the requirements for the project.
+5. Afterwards, use pip to install all the requirements for the project.
 
       `pip install -r requirements.txt`
+
+6.  Create a .env file in the file directory with the repository that includes all your API keys.
+
+## API Key Setup
+
+**OPENAI_API_KEY:** [https://platform.openai.com/](https://platform.openai.com/docs/quickstart)
+
+Free tier available, however to process sufficient amount of tokens free tier is insufficient. Requires upgrade to at least 1st tier.
+
+- Sign Up/Login: Visit the OpenAI Platform and log in or create an account.
+- Navigate to API Keys: Click on your profile icon at the top-right corner and select "View API Keys."
+- Create a New Key: Click "Create new secret key" to generate a new API key.
+- Save the Key: Copy and securely store the key, as it won't be displayed again.
+
+
+**SERPAPI_API_KEY:** [https://serpapi.com/](https://serpapi.com/)
+
+- Sign Up/Login: Visit the website and log in or create an account.
+- Select "API Key" and copy paste the API key into .env file under SERPAPI_API_KEY.
+
+**URI_FOR_Mongo:** [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+
+Sign Up/Login: Visit MongoDB Atlas and log in or create an account.
+
+- Click on "New Project"
+- Enter a Project Name and click "Next"
+- Add team members email with "Project Owner" permission 
+- Click "Create Project"
+
+Create a Cluster: 
+
+- After creating a project, click "Create" under "Create a cluster"
+- Choose M0 and click "Create DEploymenet"
+- To connect to Cluster0, save the Username and Password of database user. Click "Create Database User"
+- Click "Choose a connection method" and choose "MongoDB for VS Code"
+- Copy and paste the Connection String into the .env file for URI_FOR_Mongo
+
+Configure URI: Replace placeholders (e.g., <password>, <dbname>) with your database credentials.
+
+To obtain tlsCAFile path:
+
+- Run the following code 
+'''
+import certifi
+print(certifi.where())
+'''
+- Copy and paste this path into .env file under tlsCAFile
+
+**BRIGHTDATA_API_KEY:** [https://brightdata.com/](https://brightdata.com/)
+
+- Visit the website and create an account 
+- After logging in choose "Web Scraper API"
+- Search for "Glassdoor companies reviews - Collect by URL"
+- Click "Start setting an API call" 
+- Select JSON under "Trigger Data Collection API" and Download snapshop and JSON under "Delivery options"
+- CLick "Get API token"
+- Copy and paste this API token into .env file under BRIGHTDATA_API_KEY
+
+**TAVILY_API_KEY:** [https://tavily.com/](https://tavily.com/)
+
+Free tier allows 1000 credits
+
+**PROXYCURL_API_KEY:** [https://nubela.co/proxycurl/](https://nubela.co/proxycurl/)
+
+Small free trial avaiable. Can purchase credits starting at $10
+
+**GOOGLE_API_KEY:** [https://developers.google.com/maps/documentation/geocoding/start](https://developers.google.com/maps/documentation/geocoding/start)
+
+Activate the geocoding API and use that key after following all of the steps provided by google to make an account, billing, etc. It provides a generous free tier unlikely to reach a quota through development.
+
+**CAREERONE_API_KEY and CAREERONE_USER_ID:** [https://www.careeronestop.org/Developers/WebAPI/web-api.aspx](https://www.careeronestop.org/Developers/WebAPI/web-api.aspx)
+
+Fill out data request form to retrieve api key and user id. Completely free.
    
-8.  Run the application by using the command below to start the project in your terminal:
+7.  Run the application by using the command below to start the project in your terminal:
 
       `streamlit run Home.py`
 
@@ -128,11 +153,15 @@ ProxyCurl API: Enables web scraping for LinkedIn data.
 
 Tavily Search Engine: AI focused contextual web data retrieval.
 
+SERP API: Search Engine Results Pages API
+
+Bright Data API: (formerly known as Luminati) for scraping Glassdoor Reviews
+
 Google API: For geocoding coordinates for mapping data
 
 CareerOne API: For retrieving data related to occupations
 
-**MongoDB Set Up:**
+**MongoDB:**
 
 Number of Databases: 2
 Number of Collections: 9
@@ -194,30 +223,49 @@ exports = async function(changeEvent) {
   }
 };
 
-Notes:
-within collections files_uploaded there is a field called resume_fields. This is parsed by the AI and may be temperemental. The error checking for functions using this could be improved.
-Similarly, within Jobs is the job_details field and also temperemental to the way AI will parse data. If any issues occur for either, adjusting the associated prompt within their respective files to be more accurate will fix. However, cases of completely missing data from the original resume or job listing will require more thorough error checking.
+**Notes:** Within collections files_uploaded there is a field called resume_fields. This is parsed by the AI and may be temperemental. The error checking for functions using this could be improved. Similarly, within Jobs is the job_details field and also temperemental to the way AI will parse data. If any issues occur for either, adjusting the associated prompt within their respective files to be more accurate will fix. However, cases of completely missing data from the original resume or job listing will require more thorough error checking.
 
 Screenshots of application:
+
 Welcome Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Welcome.jpg">
+
+
 Login Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Login.jpg">
+
+
 Register Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Register.jpg">
+
+
 Advanced Enhancements Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Advanced_Enhancer.jpg">
+
+
 Simple Enhancements Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Enhance_Resume.jpg">
+
+
 Company Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Company.jpg">
+
+
 Compatibility Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/compatability.jpg">
+
+
 Paths Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Paths.jpg">
+
+
 Job Listings Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/JobListings.jpg">
+
+
 Developer Dashboard Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/DevDashboard.jpg">
+
+
 Trends Page
 <img width="1123" alt="image" src="https://github.com/maswindo/GenAIAssistant/blob/master/assets/Trends.jpg">
